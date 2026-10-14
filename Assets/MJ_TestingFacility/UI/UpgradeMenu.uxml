@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ui="UnityEngine.UIElements"
+    xmlns:uie="UnityEditor.UIElements"
+    xsi:noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd"
+>
+    <ui:Style src="UpgradeMenu.uss" />
+    <ui:VisualElement name="root" class="upgrade-panel">
+        <ui:VisualElement name="upgradeContainer" class="upgrade-container">
+            <ui:Label name="titleLabel" text="Upgrades" class="upgrade-title" />
+            <ui:Button name="fuelUpgradeButton" text="Upgrade Fuel Capacity" class="upgrade-button" />
+            <ui:Button name="enginePowerUpgradeButton" text="Upgrade Engine Power" class="upgrade-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
