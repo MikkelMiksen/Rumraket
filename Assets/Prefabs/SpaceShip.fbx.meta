@@ -1,9 +1,24 @@
 fileFormatVersion: 2
-guid: 251bf943f83f0b4448417ef0acbb6e19
+guid: f3a671fa55c5c094c9a1c42f3c07c574
 ModelImporter:
   serializedVersion: 24600
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Engine
+    second: {fileID: 2100000, guid: 8b795f9ca2b26564f91aed5b054612f7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: RocketBody
+    second: {fileID: 2100000, guid: 0ff5fffe4da190942ba8c6bf43358564, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ThrusterProtection
+    second: {fileID: 2100000, guid: deb70e7e3033c0e4c9983ca847eaef85, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
