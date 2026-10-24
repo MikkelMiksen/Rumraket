@@ -20,7 +20,7 @@ public class UpgradeMenu : MonoBehaviour
     [Tooltip("Seconds the rocket takes to rise as a new stage is added.")]
     public float riseTime = 0.8f;
 
-    [Header("Camera (optional) - keeps the whole stack in view as it grows")]
+    [Header("Camera")]
     public Camera cam;
     [Tooltip("Direction from the rocket towards the camera.")]
     public Vector3 viewDirection = new Vector3(0.6f, 0.15f, -1f);
@@ -62,8 +62,6 @@ public class UpgradeMenu : MonoBehaviour
         tier++;
         rocket.SetTier(tier, true);    // new stage slides in, shell halves clamp shut
     }
-
-    // ---- button ----------------------------------------------------------
 
     void OnGUI()
     {
@@ -120,8 +118,6 @@ public class UpgradeMenu : MonoBehaviour
         frozen = false;
         rocket.SetTier(tier, false);
     }
-
-    // ---- camera ----------------------------------------------------------
 
     void LateUpdate()
     {

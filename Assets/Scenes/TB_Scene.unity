@@ -206,7 +206,7 @@ MonoBehaviour:
   boosterSpin: 2
   boosterPopDelay: 0.1
   attachFrom: {x: 0, y: -12, z: 0}
-  attachTime: 0.9
+  attachTime: 0.5
   shellOpenDistance: 20
   shellClampTime: 1
   stageKickSpeed: 3
@@ -429,9 +429,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cee8b57c2933b841b3ed13d14f1fce7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SeparationEffects
-  explosionCount: 10
-  pyroDuration: 0.2
-  size: 1
+  explosionCount: 20
+  pyroDuration: 0.3
+  size: 10
   fireMaterial: {fileID: 0}
   smokeMaterial: {fileID: 0}
 --- !u!1 &1889975939
