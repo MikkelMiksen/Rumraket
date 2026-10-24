@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../Theme.uss" />
+    <ui:VisualElement name="readoutRoot" class="panel readout">
+        <ui:Label name="readoutLabel" text="Label" class="text-muted text-small" />
+        <ui:Label name="readoutValue" text="0" class="text-heading-small" />
+    </ui:VisualElement>
+</ui:UXML>

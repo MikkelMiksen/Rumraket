@@ -4,36 +4,87 @@ public class LaunchBehaviour_01 : MonoBehaviour
 {
     [SerializeField] private float Fuel_Amount, Fuel_Capacity, Engine_Thrust_Power, Engine_Consumption_Factor;
     [SerializeField] private Rigidbody rb;
-    
+
+    // How much one upgrade level adds
+    [SerializeField] private float fuelUpgradeAmount = 1f;
+    [SerializeField] private float engineUpgradeAmount = 1f;
+
+    // Gravity strength once the tank is empty (2 = twice normal gravity)
+    [SerializeField] private float emptyTankGravityMultiplier = 2f;
+
     private bool isFlying;
 
     public float GetETPAmount() => Engine_Thrust_Power;
     public float GetFuelCapacity() => Fuel_Capacity;
-    public void SetFuelCapacity(float new_capacity) => Fuel_Capacity = Fuel_Capacity + new_capacity;
-    public void SetETPAmount(float new_etp) => Engine_Thrust_Power = Engine_Thrust_Power + new_etp;
-    
-    
-    void Start()
+    public float GetFuelAmount() => Fuel_Amount;
+    public float GetFuelUpgradeAmount() => fuelUpgradeAmount;
+    public float GetEngineUpgradeAmount() => engineUpgradeAmount;
+
+    // Setters: replace the value (so callers pass the new total, e.g. Get...() + 1)
+    public void SetFuelCapacity(float newCapacity) => Fuel_Capacity = newCapacity;
+    public void SetETP(float newEtp) => Engine_Thrust_Power = newEtp;
+
+    // Applies one upgrade level. GameManager checks the cost before calling these.
+    public void OnFuelUpgrade()
+    {
+        Fuel_Capacity += fuelUpgradeAmount;
+    }
+
+    public void OnEngineUpgrade()
+    {
+        Engine_Thrust_Power += engineUpgradeAmount;
+    }
+
+    // GameManager calls this when the Flying state starts
+    public void StartEngine()
+    {
+        isFlying = true;
+    }
+
+    // GameManager calls this before every run (and when returning to the pad)
+    public void ResetRun()
+    {
+        // Refill using the current, upgraded capacity
+        Fuel_Amount = Fuel_Capacity;
+
+        // Engine off until StartEngine is called
+        isFlying = false;
+
+        // Remove leftover motion
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+    }
+
+    // Awake (not Start) so rb is ready before GameManager's first reset
+    void Awake()
     {
         rb = GetComponent<Rigidbody>();
         Fuel_Amount = Fuel_Capacity;
     }
-    
-    // Update is called once per frame
-    void Update()
+
+    // Physics belongs in FixedUpdate
+    void FixedUpdate()
     {
-        if (Fuel_Amount <= 0)
+        // Tank empty: add the missing share of gravity so the total is
+        // emptyTankGravityMultiplier x normal gravity. This sits above the
+        // isFlying check because the engine is already off by this point.
+        if (Fuel_Amount <= 0f)
+        {
+            Vector3 extraGravity = Physics.gravity * (emptyTankGravityMultiplier - 1f);
+            rb.AddForce(extraGravity, ForceMode.Acceleration);
+        }
+
+        if (!isFlying)
             return;
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Fuel_Amount <= 0)
         {
-            isFlying = !isFlying;
+            Fuel_Amount = 0;
+            isFlying = false;
+            return;
         }
 
-        if (isFlying)
-        {
-            Fuel_Amount -= Engine_Consumption_Factor * Time.deltaTime;
-            rb.AddForce(transform.up * (Engine_Thrust_Power * 15));
-        }
+        Fuel_Amount -= Engine_Consumption_Factor * Time.fixedDeltaTime;
+        rb.AddForce(transform.up * (Engine_Thrust_Power * 15));
     }
 }

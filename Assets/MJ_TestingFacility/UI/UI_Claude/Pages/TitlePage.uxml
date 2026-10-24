@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../Theme.uss" />
+    <ui:VisualElement name="titleRoot" class="page-content page-content--center" picking-mode="Ignore">
+        <ui:Label name="titleLabel" text="Game title" class="text-display" />
+        <ui:Button name="playButton" text="Play" class="btn btn--primary btn--wide" />
+    </ui:VisualElement>
+</ui:UXML>

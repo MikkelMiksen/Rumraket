@@ -1,0 +1,19 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../Theme.uss" />
+    <ui:VisualElement name="cardRoot" class="panel card">
+        <ui:Label name="cardName" text="Upgrade" class="text-heading-small" />
+        <ui:VisualElement name="cardPips" class="pips-row" picking-mode="Ignore">
+            <ui:VisualElement class="pip" />
+            <ui:VisualElement class="pip" />
+            <ui:VisualElement class="pip" />
+            <ui:VisualElement class="pip" />
+            <ui:VisualElement class="pip" />
+        </ui:VisualElement>
+        <ui:Label name="cardEffect" text="0 to 0" class="text-muted" />
+        <ui:VisualElement class="card-footer" picking-mode="Ignore">
+            <ui:Label name="cardCost" text="0 credits" class="text-currency" />
+            <ui:Button name="buyButton" text="Buy" class="btn btn--small" />
+        </ui:VisualElement>
+        <ui:Label name="cardMessage" text="" class="text-danger text-small card-message" />
+    </ui:VisualElement>
+</ui:UXML>

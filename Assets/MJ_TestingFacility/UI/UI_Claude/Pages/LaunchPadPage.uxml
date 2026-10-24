@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../Theme.uss" />
+    <ui:VisualElement name="launchPadRoot" class="page-content" picking-mode="Ignore">
+        <ui:VisualElement class="page-header" picking-mode="Ignore">
+            <ui:Label text="Launch pad" class="text-heading" />
+            <ui:Label name="creditsLabel" text="0 credits" class="text-currency" />
+        </ui:VisualElement>
+        <ui:VisualElement name="journeyPanel" class="panel journey-panel mt-md">
+            <ui:Label name="journeyText" text="No flights yet" class="text-body" />
+            <ui:ProgressBar name="journeyProgress" class="progress" value="0" low-value="0" high-value="100" />
+            <ui:VisualElement class="journey-labels" picking-mode="Ignore">
+                <ui:Label name="journeyFromLabel" text="Ground" class="text-muted text-small" />
+                <ui:Label name="journeyToLabel" text="Atmosphere" class="text-muted text-small" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="spacer" picking-mode="Ignore" />
+        <ui:VisualElement class="button-row" picking-mode="Ignore">
+            <ui:Button name="upgradesButton" text="Upgrade hub" class="btn" />
+            <ui:Button name="launchButton" text="Launch" class="btn btn--primary" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

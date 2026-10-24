@@ -52,7 +52,7 @@ public class UpgradeBehaviour : MonoBehaviour
     {
         if (score >= cost)
         {
-            player.GetComponent<LaunchBehaviour_01>().SetFuelCapacity(player.GetComponent<LaunchBehaviour_01>().GetFuelCapacity() + 1);
+            player.GetComponent<LaunchBehaviour_01>().SetETP(player.GetComponent<LaunchBehaviour_01>().GetETPAmount() + 1);
         }
     }
 }

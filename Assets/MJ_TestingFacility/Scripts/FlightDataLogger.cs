@@ -27,11 +27,11 @@ public class FlightDataLogger : MonoBehaviour
         
         lastFramePosition = Player.transform.position;
 
-        if (Player.transform.position.y <= MaxHeight - 20)
+        if (Player.GetComponent<LaunchBehaviour_01>().GetFuelAmount() <= 0)
         {
-            // TODO: Display Reset prompt
+            // TODO: Display Reset prompt run summary
 
-            if (Input.GetKeyDown(KeyCode.R))
+            if (Input.GetKeyDown(KeyCode.R)) //TODO: implement in UI instead
             {
                 score += (int)MaxHeight + (int)MaxVelocity;
                 Player.transform.position = initialPosition.position;

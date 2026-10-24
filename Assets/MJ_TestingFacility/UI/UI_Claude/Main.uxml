@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="Theme.uss" />
+    <ui:Template name="TitlePage" src="Pages/TitlePage.uxml" />
+    <ui:Template name="LaunchPadPage" src="Pages/LaunchPadPage.uxml" />
+    <ui:Template name="UpgradeHubPage" src="Pages/UpgradeHubPage.uxml" />
+    <ui:Template name="HudPage" src="Pages/HudPage.uxml" />
+    <ui:Template name="SummaryPage" src="Pages/SummaryPage.uxml" />
+    <ui:VisualElement name="root" class="root" picking-mode="Ignore">
+        <ui:Instance template="TitlePage" name="pageTitle" class="page" picking-mode="Ignore" />
+        <ui:Instance template="LaunchPadPage" name="pageLaunchPad" class="page page--hidden" picking-mode="Ignore" />
+        <ui:Instance template="UpgradeHubPage" name="pageUpgradeHub" class="page page--hidden" picking-mode="Ignore" />
+        <ui:Instance template="HudPage" name="pageHud" class="page page--hidden" picking-mode="Ignore" />
+        <ui:Instance template="SummaryPage" name="pageSummary" class="page page--hidden" picking-mode="Ignore" />
+    </ui:VisualElement>
+</ui:UXML>
