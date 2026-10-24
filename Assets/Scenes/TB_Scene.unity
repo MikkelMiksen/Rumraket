@@ -119,6 +119,253 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &19999672
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 19999674}
+  - component: {fileID: 19999673}
+  m_Layer: 0
+  m_Name: BackgroundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &19999673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 19999672}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85d5d6ee5d110004092615ef3220a05c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpaceBackdrop
+  target: {fileID: 1010479168}
+  pad: {fileID: 2051497935}
+  smoothTime: 0.4
+  atmosphereHeight: 150
+  orbitHeight: 500
+  atmosphereAltitude: 0.35
+  zenith:
+    serializedVersion: 2
+    key0: {r: 0.22, g: 0.46, b: 0.88, a: 1}
+    key1: {r: 0.05, g: 0.12, b: 0.4, a: 1}
+    key2: {r: 0.005, g: 0.012, b: 0.06, a: 0}
+    key3: {r: 0, g: 0, b: 0.01, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 22937
+    ctime2: 45875
+    ctime3: 65535
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 4
+    m_NumAlphaKeys: 2
+  horizon:
+    serializedVersion: 2
+    key0: {r: 0.72, g: 0.84, b: 0.96, a: 1}
+    key1: {r: 0.3, g: 0.5, b: 0.8, a: 1}
+    key2: {r: 0.03, g: 0.06, b: 0.16, a: 0}
+    key3: {r: 0.01, g: 0.02, b: 0.05, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 22937
+    ctime2: 45875
+    ctime3: 65535
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 4
+    m_NumAlphaKeys: 2
+  belowHorizon:
+    serializedVersion: 2
+    key0: {r: 0.45, g: 0.52, b: 0.58, a: 1}
+    key1: {r: 0.12, g: 0.2, b: 0.3, a: 1}
+    key2: {r: 0.01, g: 0.02, b: 0.05, a: 0}
+    key3: {r: 0, g: 0, b: 0.01, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 22937
+    ctime2: 45875
+    ctime3: 65535
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 4
+    m_NumAlphaKeys: 2
+  ambient:
+    serializedVersion: 2
+    key0: {r: 0.5, g: 0.58, b: 0.7, a: 1}
+    key1: {r: 0.3, g: 0.35, b: 0.5, a: 1}
+    key2: {r: 0.18, g: 0.2, b: 0.28, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 22937
+    ctime2: 65535
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 3
+    m_NumAlphaKeys: 2
+  starsStart: 0.3
+  starsFull: 0.75
+  starDensity: 0.5
+  nebulaStrength: 0.35
+  sun: {fileID: 0}
+  sunDirection: {x: 0.4, y: 0.45, z: 0.8}
+  sunIntensityAtPad: 1.1
+  sunIntensityInSpace: 1.3
+  cloudCount: 45
+  cloudMaxHeight: 160
+  cloudSpread: 90
+  cloudMinDistance: 18
+  cloudWidth: {x: 25, y: 70}
+  cloudOpacity: 0.85
+  planets:
+  - name: Blue world
+    azimuth: -25
+    elevation: 8
+    distance: 650
+    radius: 180
+    growth: 0.8
+    parallax: 0.3
+    appearAt: 0.35
+    spin: 1
+    colorA: {r: 0.08, g: 0.25, b: 0.6, a: 1}
+    colorB: {r: 0.2, g: 0.5, b: 0.25, a: 1}
+    colorC: {r: 0.85, g: 0.85, b: 0.8, a: 1}
+    cloudColor: {r: 1, g: 1, b: 1, a: 1}
+    atmosphere: {r: 0.4, g: 0.7, b: 1, a: 1}
+    seed: 1
+    featureScale: 3
+    seaLevel: 0.5
+    cloudAmount: 0.45
+    bands: 0
+    bandFrequency: 12
+  - name: Red world
+    azimuth: 40
+    elevation: 28
+    distance: 700
+    radius: 60
+    growth: 0.6
+    parallax: 0.2
+    appearAt: 0.5
+    spin: 2
+    colorA: {r: 0.35, g: 0.12, b: 0.08, a: 1}
+    colorB: {r: 0.75, g: 0.35, b: 0.18, a: 1}
+    colorC: {r: 0.9, g: 0.7, b: 0.5, a: 1}
+    cloudColor: {r: 1, g: 0.85, b: 0.7, a: 1}
+    atmosphere: {r: 1, g: 0.5, b: 0.3, a: 1}
+    seed: 5
+    featureScale: 3
+    seaLevel: 0.35
+    cloudAmount: 0.1
+    bands: 0
+    bandFrequency: 12
+  - name: Gas giant
+    azimuth: 110
+    elevation: 15
+    distance: 800
+    radius: 140
+    growth: 0.5
+    parallax: 0.15
+    appearAt: 0.65
+    spin: 3
+    colorA: {r: 0.55, g: 0.35, b: 0.25, a: 1}
+    colorB: {r: 0.9, g: 0.75, b: 0.55, a: 1}
+    colorC: {r: 0.65, g: 0.45, b: 0.35, a: 1}
+    cloudColor: {r: 1, g: 1, b: 1, a: 1}
+    atmosphere: {r: 1, g: 0.85, b: 0.6, a: 1}
+    seed: 9
+    featureScale: 3
+    seaLevel: 0.5
+    cloudAmount: 0
+    bands: 1
+    bandFrequency: 14
+  skyShader: {fileID: 4800000, guid: df2cac68933380843bbcc04ad0debebd, type: 3}
+  planetShader: {fileID: 4800000, guid: 86ce79e72aba79047aa66cb7215e2137, type: 3}
+--- !u!4 &19999674
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 19999672}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &530804009
 GameObject:
   m_ObjectHideFlags: 0
@@ -172,6 +419,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1010479168 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f3a671fa55c5c094c9a1c42f3c07c574, type: 3}
+  m_PrefabInstance: {fileID: 1617442939}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1446442864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -648,3 +900,4 @@ SceneRoots:
   - {fileID: 1617442939}
   - {fileID: 2051497935}
   - {fileID: 530804011}
+  - {fileID: 19999674}
