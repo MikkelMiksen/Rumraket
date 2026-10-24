@@ -14,13 +14,13 @@ public class UpgradeMenu : MonoBehaviour
     public RocketAssembly rocket;
 
     [Header("Launch pad")]
-    [Tooltip("Launch pad Object whose height is the TOP of the launch pad. " +
+    [Tooltip("Optional. An empty object (or the pad) whose height is the TOP of the launch pad. " +
              "Empty = use the rocket's starting height, i.e. wherever you placed it on the pad.")]
     public Transform pad;
     [Tooltip("Seconds the rocket takes to rise as a new stage is added.")]
     public float riseTime = 0.8f;
 
-    [Header("Camera - keeps the whole stack in view as it grows")]
+    [Header("Camera (optional) - keeps the whole stack in view as it grows")]
     public Camera cam;
     [Tooltip("Direction from the rocket towards the camera.")]
     public Vector3 viewDirection = new Vector3(0.6f, 0.15f, -1f);
@@ -33,6 +33,7 @@ public class UpgradeMenu : MonoBehaviour
     int tier = 1;
     float padY;
     float riseVelocity;
+    bool frozen;   // true after a TEST drop: leave the rocket where it is
 
     void Start()
     {
@@ -66,23 +67,65 @@ public class UpgradeMenu : MonoBehaviour
 
     void OnGUI()
     {
-        float h = Screen.height * 0.08f;
+        float h = Screen.height * 0.07f;
         float w = Screen.width * 0.25f;
+        float gap = 10f;
+        float y = Screen.height - h - 20f;
         var style = new GUIStyle(GUI.skin.button) { fontSize = Mathf.RoundToInt(h * 0.4f) };
 
+        // 1) Add the next stage
         bool maxed = tier >= rocket.StageCount;
-        GUI.enabled = !maxed;
+        GUI.enabled = !maxed && !frozen;
         string label = maxed ? "Fully upgraded" : "Upgrade rocket (" + tier + "/" + rocket.StageCount + ")";
-        if (GUI.Button(new Rect(20f, Screen.height - h - 20f, w, h), label, style))
-            Upgrade();
+        if (GUI.Button(new Rect(20f, y, w, h), label, style)) Upgrade();
+        y -= h + gap;
+
+        // 2) Boosters: 0 -> 2 -> 4 -> 0 (needs Stage 1, which they are strapped to)
+        GUI.enabled = rocket.BoostersAvailable && !frozen;
+        if (GUI.Button(new Rect(20f, y, w, h), "Boosters: " + rocket.BoosterCount + "/" + rocket.BoosterMax, style))
+            rocket.SetBoosterCount(NextBoosterCount(), true);
+        y -= h + gap;
+
+        // 3) Test buttons, so you can see the drops without the flight code
         GUI.enabled = true;
+        if (GUI.Button(new Rect(20f, y, w, h), "drop stage", style)) TestDropStage();
+        y -= h + gap;
+        if (GUI.Button(new Rect(20f, y, w, h), "drop boosters", style)) TestDropBoosters();
+        y -= h + gap;
+        if (GUI.Button(new Rect(20f, y, w, h), "reset rocket", style)) TestReset();
+    }
+
+    int NextBoosterCount()
+    {
+        int next = rocket.BoosterCount + 2;
+        return next > rocket.BoosterMax ? 0 : next;
+    }
+
+    // Drops the bottom stage; any boosters still on Stage 1 fall away with it.
+    void TestDropStage()
+    {
+        frozen = true;   // stop keeping the base on the pad, the rocket is "in flight"
+        rocket.SeparateLowestStage();
+    }
+
+    // Drops only the boosters (what happens when they run out of fuel before the stage does).
+    void TestDropBoosters()
+    {
+        frozen = true;
+        rocket.DropBoosters();
+    }
+
+    void TestReset()
+    {
+        frozen = false;
+        rocket.SetTier(tier, false);
     }
 
     // ---- camera ----------------------------------------------------------
 
     void LateUpdate()
     {
-        SetRocketHeight(false);
+        if (!frozen) SetRocketHeight(false);
 
         if (!cam) return;
         Vector3 pos; Quaternion rot;

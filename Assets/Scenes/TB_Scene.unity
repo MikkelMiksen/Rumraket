@@ -198,6 +198,13 @@ MonoBehaviour:
     shellHalves:
     - {fileID: 1617442942}
     - {fileID: 1617442941}
+  boosters: []
+  boostersStage: 0
+  boosterOpenDistance: 1.5
+  boosterClampTime: 0.45
+  boosterPopSpeed: 4
+  boosterSpin: 2
+  boosterPopDelay: 0.1
   attachFrom: {x: 0, y: -12, z: 0}
   attachTime: 0.9
   shellOpenDistance: 20
@@ -206,6 +213,7 @@ MonoBehaviour:
   shellPopSpeed: 6
   shellSpin: 3
   shellPopDelay: 0.15
+  stageReleaseDelay: 0.35
   debrisLifetime: 6
   debrisCollides: 0
   externalVelocity: {x: 0, y: 0, z: 0}
@@ -365,6 +373,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f3a671fa55c5c094c9a1c42f3c07c574, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1446442864}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f3a671fa55c5c094c9a1c42f3c07c574, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1847255252}
   m_SourcePrefab: {fileID: 100100000, guid: f3a671fa55c5c094c9a1c42f3c07c574, type: 3}
 --- !u!1 &1617442940 stripped
 GameObject:
@@ -406,6 +417,23 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 89165236634729457, guid: f3a671fa55c5c094c9a1c42f3c07c574, type: 3}
   m_PrefabInstance: {fileID: 1617442939}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1847255252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1617442940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cee8b57c2933b841b3ed13d14f1fce7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SeparationEffects
+  explosionCount: 10
+  pyroDuration: 0.2
+  size: 1
+  fireMaterial: {fileID: 0}
+  smokeMaterial: {fileID: 0}
 --- !u!1 &1889975939
 GameObject:
   m_ObjectHideFlags: 0

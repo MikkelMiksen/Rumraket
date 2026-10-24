@@ -30,19 +30,34 @@ public class RocketAssembly : MonoBehaviour
 
     public List<Stage> stages = new List<Stage>();
 
+    [Header("Strap-on boosters (optional)")]
+    [Tooltip("The booster objects (Stage1Booster_1..4). They are shown and dropped as a group.")]
+    public Transform[] boosters = new Transform[0];
+    [Tooltip("The stage the boosters are strapped to (0 = Stage 1). They are only visible while it is attached.")]
+    public int boostersStage = 0;
+    [Tooltip("How far out a booster starts when it clamps onto the stage.")]
+    public float boosterOpenDistance = 1.5f;
+    public float boosterClampTime = 0.45f;
+    [Tooltip("Speed a booster is pushed outwards when dropped (m/s).")]
+    public float boosterPopSpeed = 4f;
+    public float boosterSpin = 2f;
+    public float boosterPopDelay = 0.1f;
+
     [Header("Upgrade / attach animation")]
     [Tooltip("Where a new stage slides in from (local units, relative to its assembled position).")]
     public Vector3 attachFrom = new Vector3(0f, -12f, 0f);
     public float attachTime = 0.9f;
     [Tooltip("How far the shell halves start apart before clamping shut.")]
-    public float shellOpenDistance = 20f;
-    public float shellClampTime = 1f;
+    public float shellOpenDistance = 0.8f;
+    public float shellClampTime = 0.3f;
 
     [Header("Separation (flight)")]
     public float stageKickSpeed = 3f;       // spent stage pushed backwards (m/s)
     public float shellPopSpeed = 6f;        // shell halves pushed outwards (m/s)
     public float shellSpin = 3f;            // tumble (rad/s)
-    public float shellPopDelay = 0.15f;     // pause between separation and the shell bursting open
+    public float shellPopDelay = 0.2f;      // pause between separation and the shell bursting open
+    [Tooltip("The stage lets go this long after separation starts, so the pyro bolts and ignition are seen first.")]
+    public float stageReleaseDelay = 0.35f;
     public float debrisLifetime = 6f;
     [Tooltip("Off = debris ignores everything (safe, no bumping into the rocket). On = debris gets a convex MeshCollider.")]
     public bool debrisCollides = false;
@@ -51,6 +66,8 @@ public class RocketAssembly : MonoBehaviour
 
     public event Action<int> StageAttached;   // stage index
     public event Action<int> StageSeparated;  // stage index (hook engine ignition / sound / VFX here)
+    public event Action BoostersDropped;      // the strap-on boosters were jettisoned
+    public event Action<int> SeparationStarted;   // stage index: fires first, before anything moves (effects start here)
 
     struct Rest
     {
@@ -62,12 +79,21 @@ public class RocketAssembly : MonoBehaviour
 
     readonly Dictionary<Transform, Rest> rests = new Dictionary<Transform, Rest>();
     readonly HashSet<Transform> addedColliders = new HashSet<Transform>();
+    readonly HashSet<Transform> released = new HashSet<Transform>();   // parts that have been dropped
     int lowest;   // index of the lowest stage that is currently attached
+    int boosterCount;     // how many boosters the player has (0..boosters.Length)
+    int[] boosterRank;    // order boosters appear in: opposite pairs first
 
     public int Tier { get { return stages.Count - lowest; } }
     public int StageCount { get { return stages.Count; } }
     /// <summary>Index of the bottom-most stage still attached (0 = Stage 1).</summary>
     public int LowestIndex { get { return lowest; } }
+
+    /// <summary>How many boosters are currently owned (not necessarily visible if their stage is missing).</summary>
+    public int BoosterCount { get { return boosterCount; } }
+    public int BoosterMax { get { return boosters.Length; } }
+    /// <summary>True when the stage the boosters are strapped to is attached.</summary>
+    public bool BoostersAvailable { get { return boosters.Length > 0 && lowest <= boostersStage; } }
 
     /// <summary>
     /// Local height of the bottom of the current stack (the lowest attached stage's pivot).
@@ -86,19 +112,37 @@ public class RocketAssembly : MonoBehaviour
     // ------------------------------------------------------------------ setup
 
 #if UNITY_EDITOR
-    // Runs when you add the component: fills the list from the names in the Blender file.
-    void Reset()
+    // Runs when you add the component (or right-click > Reset): re-fills everything from the object names.
+    void Reset() { AutoFill(true, true); }
+#endif
+
+    // Fills the lists from the object names in the Blender file.
+    // force = replace even if already filled; otherwise only an EMPTY list is filled in.
+    void AutoFill(bool forceStages, bool forceBoosters)
     {
-        string[] bodies = { "Stage1Rocket", "Stage2Rocket", "Stage3FlightDeck" };
-        stages.Clear();
-        for (int i = 0; i < bodies.Length; i++)
+        if (forceStages || stages == null || stages.Count == 0)
         {
-            var stage = new Stage { name = bodies[i], body = FindDeep(bodies[i]) };
-            var halves = new List<Transform>();
+            string[] bodies = { "Stage1Rocket", "Stage2Rocket", "Stage3FlightDeck" };
+            stages = new List<Stage>();
+            for (int i = 0; i < bodies.Length; i++)
+            {
+                var stage = new Stage { name = bodies[i], body = FindDeep(bodies[i]) };
+                var halves = new List<Transform>();
+                foreach (var t in GetComponentsInChildren<Transform>(true))
+                    if (t.name.StartsWith("Stage" + (i + 1) + "ThrusterProtection")) halves.Add(t);
+                stage.shellHalves = halves.ToArray();
+                stages.Add(stage);
+            }
+        }
+
+        if (forceBoosters || boosters == null || boosters.Length == 0)
+        {
+            var found = new List<Transform>();
             foreach (var t in GetComponentsInChildren<Transform>(true))
-                if (t.name.StartsWith("Stage" + (i + 1) + "ThrusterProtection")) halves.Add(t);
-            stage.shellHalves = halves.ToArray();
-            stages.Add(stage);
+                if (t.name.StartsWith("Stage1Booster_")) found.Add(t);
+            found.Sort((a, b) => string.CompareOrdinal(a.name, b.name));
+            boosters = found.ToArray();
+            boostersStage = 0;
         }
     }
 
@@ -108,18 +152,38 @@ public class RocketAssembly : MonoBehaviour
             if (t.name == n) return t;
         return null;
     }
-#endif
 
     void Awake()
     {
+        AutoFill(false, false);   // finds the stages and boosters by name if the lists were left empty
+
         foreach (var s in stages)
         {
             Record(s.body);
             foreach (var h in s.shellHalves) Record(h);
         }
+        foreach (var b in boosters) Record(b);
+        BuildBoosterRanks();
+
         lowest = 0;
         ApplyState(0, 0);
     }
+
+    // With an even number of boosters, they appear in opposite pairs (0 & 2, then 1 & 3) so the rocket stays balanced.
+    void BuildBoosterRanks()
+    {
+        int n = boosters.Length;
+        boosterRank = new int[n];
+        for (int k = 0; k < n; k++)
+        {
+            int idx = (n % 2 == 0) ? ((k % 2 == 0) ? k / 2 : n / 2 + k / 2) : k;
+            boosterRank[idx] = k;
+        }
+    }
+
+    bool BoosterWanted(int idx) { return boosterRank[idx] < boosterCount; }
+
+    bool IsAttached(Transform t) { return t.gameObject.activeSelf && !released.Contains(t); }
 
     void Record(Transform t)
     {
@@ -168,6 +232,11 @@ public class RocketAssembly : MonoBehaviour
             foreach (var h in stages[i].shellHalves)
                 if (h) h.gameObject.SetActive(shellOn);
         }
+
+        // Boosters: shown if their stage is attached (and was already there) and the player owns this one.
+        for (int i = 0; i < boosters.Length; i++)
+            if (boosters[i])
+                boosters[i].gameObject.SetActive(boostersStage >= shellsFrom && BoosterWanted(i));
     }
 
     IEnumerator SlideIn(int i, float delay)
@@ -193,25 +262,80 @@ public class RocketAssembly : MonoBehaviour
         // The stage above has a shell over its engine: close it around the new joint.
         if (i + 1 < stages.Count)
             foreach (var h in stages[i + 1].shellHalves)
-                if (h) StartCoroutine(ClampShell(h));
+                if (h) StartCoroutine(ClampIn(h, shellOpenDistance, shellClampTime));
+
+        // Boosters strapped to this stage clamp on once it is in place.
+        if (i == boostersStage)
+            for (int k = 0; k < boosters.Length; k++)
+                if (boosters[k] && BoosterWanted(k))
+                    StartCoroutine(ClampIn(boosters[k], boosterOpenDistance, boosterClampTime));
     }
 
-    IEnumerator ClampShell(Transform half)
+    /// <summary>A part starts out to the side and slides in against the rocket.</summary>
+    IEnumerator ClampIn(Transform part, float distance, float time)
     {
-        Rest rest = rests[half];
-        half.gameObject.SetActive(true);
-        Vector3 outward = OutwardDir(half) * shellOpenDistance;
-        Vector3 open = half.parent ? half.parent.InverseTransformVector(outward) : outward;
+        Rest rest = rests[part];
+        part.gameObject.SetActive(true);
+        Vector3 outward = OutwardDir(part) * distance;
+        Vector3 open = part.parent ? part.parent.InverseTransformVector(outward) : outward;
 
-        for (float t = 0f; t < 1f; t += Time.deltaTime / shellClampTime)
+        for (float t = 0f; t < 1f; t += Time.deltaTime / time)
         {
             float e = t * t * (3f - 2f * t);                         // smoothstep
-            half.localPosition = rest.pos + open * (1f - e);
+            part.localPosition = rest.pos + open * (1f - e);
             yield return null;
         }
-        half.localPosition = rest.pos;
+        part.localPosition = rest.pos;
+    }
 
-        shellOpenDistance *= 2f; // next time a stage is added, the shell halves will start further apart
+    // ------------------------------------------------------------------ boosters
+
+    /// <summary>
+    /// How many boosters the player owns (0..BoosterMax). They clamp on if their stage is attached,
+    /// otherwise they appear when it is. Call SetTier afterwards if boosters have been dropped.
+    /// </summary>
+    public void SetBoosterCount(int count, bool animate = true)
+    {
+        boosterCount = Mathf.Clamp(count, 0, boosters.Length);
+        bool stageThere = lowest <= boostersStage;
+
+        for (int i = 0; i < boosters.Length; i++)
+        {
+            Transform b = boosters[i];
+            if (!b || released.Contains(b)) continue;
+
+            if (!(stageThere && BoosterWanted(i)))
+                b.gameObject.SetActive(false);
+            else if (!b.gameObject.activeSelf)
+            {
+                if (animate) StartCoroutine(ClampIn(b, boosterOpenDistance, boosterClampTime));
+                else b.gameObject.SetActive(true);
+            }
+        }
+    }
+
+    /// <summary>Jettisons every attached booster at once, each pushed outwards from the rocket.</summary>
+    public bool DropBoosters()
+    {
+        bool any = false;
+        foreach (var b in boosters)
+        {
+            if (!b || !IsAttached(b)) continue;
+            released.Add(b);            // mark now so a second call during the delay does nothing
+            StartCoroutine(PopBooster(b));
+            any = true;
+        }
+        if (any) BoostersDropped?.Invoke();
+        return any;
+    }
+
+    IEnumerator PopBooster(Transform b)
+    {
+        yield return new WaitForSeconds(boosterPopDelay);
+        Vector3 outward = OutwardDir(b);
+        Vector3 velocity = (outward - transform.up * 0.15f).normalized * boosterPopSpeed;
+        Vector3 spin = Vector3.Cross(transform.up, outward) * boosterSpin + Random.insideUnitSphere * 0.5f;
+        Release(b, velocity, spin);
     }
 
     // ------------------------------------------------------------------ flight: staging
@@ -225,17 +349,67 @@ public class RocketAssembly : MonoBehaviour
         Stage gone = stages[index];
         Stage next = stages[index + 1];
 
-        // 1) Spent stage falls away backwards.
-        if (gone.body)
-            Release(gone.body, -transform.up * stageKickSpeed, Random.insideUnitSphere * 0.3f);
+        SeparationStarted?.Invoke(index);   // pyro bolts / ignition effects begin now
 
-        // 2) The shell that was hiding the next engine bursts open a moment later.
+        // 1) The spent stage (and any boosters still on it) lets go a moment later.
+        StartCoroutine(ReleaseStage(gone, index));
+
+        // 2) The shell that was hiding the next engine bursts open on the way.
         foreach (var h in next.shellHalves)
             if (h && h.gameObject.activeSelf) StartCoroutine(PopShell(h));
 
-        lowest++;
+        lowest++;                           // the next stage counts as the active one right away
         StageSeparated?.Invoke(index);
         return true;
+    }
+
+    IEnumerator ReleaseStage(Stage gone, int index)
+    {
+        if (stageReleaseDelay > 0f) yield return new WaitForSeconds(stageReleaseDelay);
+
+        // Spent stage falls away backwards.
+        if (gone.body)
+            Release(gone.body, -transform.up * stageKickSpeed, Random.insideUnitSphere * 0.3f);
+
+        // Boosters still strapped to this stage leave with it.
+        if (index == boostersStage)
+            foreach (var b in boosters)
+                if (b && IsAttached(b))
+                    Release(b, -transform.up * stageKickSpeed, Random.insideUnitSphere * 0.3f);
+    }
+
+    /// <summary>
+    /// World-space info about the joint where stage 'index' meets the stage above it, for effects:
+    /// the ring where the shell halves sit, its radius, and the point under the next stage's engine bell.
+    /// </summary>
+    public void GetSeam(int index, out Vector3 ringCenter, out float radius, out Vector3 enginePoint)
+    {
+        Stage next = stages[Mathf.Min(index + 1, stages.Count - 1)];
+
+        bool have = false;
+        Bounds shell = new Bounds(transform.position, Vector3.zero);
+        foreach (var h in next.shellHalves)
+        {
+            if (!h) continue;
+            var r = h.GetComponentInChildren<Renderer>();
+            if (!r) continue;
+            if (!have) { shell = r.bounds; have = true; } else shell.Encapsulate(r.bounds);
+        }
+
+        Bounds body = shell;
+        if (next.body)
+        {
+            var r = next.body.GetComponentInChildren<Renderer>();
+            if (r) body = r.bounds;
+        }
+        if (!have) shell = body;
+
+        // Both points sit on the rocket's own axis.
+        Vector3 up = transform.up;
+        Vector3 origin = transform.position;
+        ringCenter = origin + up * (Vector3.Dot(shell.min - origin, up) + 0.25f);
+        enginePoint = origin + up * Vector3.Dot(body.min - origin, up);
+        radius = Mathf.Max(shell.extents.x, shell.extents.z);
     }
 
     IEnumerator PopShell(Transform half)
@@ -252,6 +426,7 @@ public class RocketAssembly : MonoBehaviour
         Rigidbody rocketRb = GetComponentInParent<Rigidbody>();
         Vector3 inherited = rocketRb ? rocketRb.GetPointVelocity(t.position) : externalVelocity;
 
+        released.Add(t);
         t.SetParent(null, true);
 
         Rigidbody rb;
@@ -314,5 +489,6 @@ public class RocketAssembly : MonoBehaviour
             t.gameObject.SetActive(true);
         }
         addedColliders.Clear();
+        released.Clear();
     }
 }
