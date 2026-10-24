@@ -35,8 +35,8 @@ public class RocketAssembly : MonoBehaviour
     public Vector3 attachFrom = new Vector3(0f, -12f, 0f);
     public float attachTime = 0.9f;
     [Tooltip("How far the shell halves start apart before clamping shut.")]
-    public float shellOpenDistance = 0.8f;
-    public float shellClampTime = 0.3f;
+    public float shellOpenDistance = 20f;
+    public float shellClampTime = 1f;
 
     [Header("Separation (flight)")]
     public float stageKickSpeed = 3f;       // spent stage pushed backwards (m/s)
@@ -210,6 +210,8 @@ public class RocketAssembly : MonoBehaviour
             yield return null;
         }
         half.localPosition = rest.pos;
+
+        shellOpenDistance *= 2f; // next time a stage is added, the shell halves will start further apart
     }
 
     // ------------------------------------------------------------------ flight: staging
