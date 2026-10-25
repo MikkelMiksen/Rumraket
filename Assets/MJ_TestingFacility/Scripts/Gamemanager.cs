@@ -24,11 +24,14 @@ public class GameManager : MonoBehaviour
 
     [Header("Module purchases (after the last upgrade level)")]
     [Tooltip("How many module generations each part can reach. 2 = the original plus one bought upgrade.")]
-    [SerializeField] private int maxModuleTier = 2;
+    [SerializeField] private int maxModuleTier = 3;
     [Tooltip("Price of a new module = the next upgrade's price x this.")]
     [SerializeField] private float moduleBuyCostMultiplier = 5f;
     [Tooltip("A new module gives this many upgrade levels' worth of stats at once.")]
     [SerializeField] private int moduleBuyBonusSteps = 3;
+
+    [Header("Boosters (after Mk 3 is maxed on both parts)")]
+    [SerializeField] private int boosterCost = 1000;
 
     [Header("Rocket stages")]
     [Tooltip("Seconds the rocket takes to rise as a new stage is added.")]
@@ -47,6 +50,7 @@ public class GameManager : MonoBehaviour
 
     // ---------- Game state ----------
     private GameState currentState;
+    public GameState CurrentState => currentState;
     private bool stateInitialized;
 
     // ---------- UI readiness ----------
@@ -57,8 +61,7 @@ public class GameManager : MonoBehaviour
     private int credits;
     private int fuelLevel;
     private int engineLevel;
-    private int fuelTier = 1;
-    private int engineTier = 1;
+    private int moduleTier = 1;   // shared by fuel and engine (Mk 1, 2, 3)
     private float bestHeight;
 
     // ---------- Current run ----------
@@ -78,9 +81,16 @@ public class GameManager : MonoBehaviour
 
     public Rigidbody ShipBody => shipBody;
     public LaunchBehaviour_01 Ship => ship;
+    public RocketAssembly Rocket => rocket;
 
     private void Awake()
     {
+        if (ship == null)
+        {
+            Debug.LogError("GameManager: 'ship' reference is not assigned in the Inspector!");
+            return;
+        }
+
         // Step 1: remember where the ship sits on the pad. This is in Awake
         // because the UI callback below can fire before Start runs.
         startPosition = ship.transform.position;
@@ -135,6 +145,7 @@ public class GameManager : MonoBehaviour
     // UI is rebuilt (for example by live reload after you edit a UXML file).
     private void OnUIReload(PanelRenderer renderer, VisualElement root, int version)
     {
+        Debug.Log("GameManager: OnUIReload called. Version: " + version);
         // Skip if the visual tree has not been rebuilt since the last call
         if (version == uiVersion)
         {
@@ -295,9 +306,13 @@ public class GameManager : MonoBehaviour
     // ===================================================================
     // UI events: a click is only a request
     // ===================================================================
-    public event System.Action<UpgradeType, int> OnModuleTierChanged;
+    public event System.Action<int> OnModuleTierChanged;
 
-    private void OnPlayClicked() { SetState(GameState.LaunchPad); }
+    private void OnPlayClicked() 
+    { 
+        Debug.Log("GameManager: OnPlayClicked received.");
+        SetState(GameState.LaunchPad); 
+    }
     private void OnUpgradesClicked() { SetState(GameState.UpgradeHub); }
     private void OnLaunchClicked() { StartCoroutine(LaunchDelay()); }
 
@@ -313,9 +328,13 @@ public class GameManager : MonoBehaviour
     {
         // The same button does two jobs: another upgrade level, or (once the
         // levels are used up) buying the next module
-        if (CanBuyModule(type))
+        if (IsBoosterEligible() && rocket.BoosterCount < rocket.BoosterMax)
         {
-            BuyModule(type);
+            BuyBooster();
+        }
+        else if (CanBuyModule())
+        {
+            BuyModule();
         }
         else
         {
@@ -383,12 +402,12 @@ public class GameManager : MonoBehaviour
     private void FinishRun()
     {
         // Step 1: turn the run into points and credits
-        int distancePoints = Mathf.FloorToInt(runMaxHeight);
+        int heightPoints = Mathf.FloorToInt(runMaxHeight);
         int speedPoints = Mathf.FloorToInt(runMaxSpeed);
-        int totalPoints = distancePoints + speedPoints;
+        int totalPoints = heightPoints + speedPoints;
         int creditsEarned = Mathf.FloorToInt(totalPoints * creditsPerPoint);
 
-        // Step 2: update best distance and bank the credits
+        // Step 2: update best height and bank the credits
         bool isNewBest = runMaxHeight > bestHeight;
 
         if (isNewBest)
@@ -400,7 +419,7 @@ public class GameManager : MonoBehaviour
 
         // Step 3: show the breakdown
         ui_functionality.SetSummary(
-            Mathf.FloorToInt(runMaxHeight), distancePoints,
+            Mathf.FloorToInt(runMaxHeight), heightPoints,
             Mathf.FloorToInt(runMaxSpeed), speedPoints,
             totalPoints, creditsPerPoint,
             creditsEarned, isNewBest);
@@ -449,34 +468,26 @@ public class GameManager : MonoBehaviour
         return Mathf.RoundToInt(cost);
     }
 
-    public int GetTier(UpgradeType type)
-    {
-        if (type == UpgradeType.FuelCapacity)
-        {
-            return fuelTier;
-        }
-
-        return engineTier;
-    }
+    public int ModuleTier => moduleTier;
 
     // Upgrade levels count across module generations, so prices keep rising
     private int GetEffectiveLevel(UpgradeType type)
     {
-        return (GetTier(type) - 1) * maxUpgradeLevel + GetLevel(type);
+        return (moduleTier - 1) * maxUpgradeLevel + GetLevel(type);
     }
 
-    private bool CanBuyModule(UpgradeType type)
+    private bool CanBuyModule()
     {
-        bool fuelMaxed = GetLevel(UpgradeType.FuelCapacity) >= maxUpgradeLevel;
-        bool engineMaxed = GetLevel(UpgradeType.EnginePower) >= maxUpgradeLevel;
-        bool nextModuleExists = GetTier(type) < maxModuleTier;
-        return fuelMaxed && engineMaxed && nextModuleExists;
+        bool nextModuleExists = moduleTier < maxModuleTier;
+        bool fuelMaxed = fuelLevel >= maxUpgradeLevel;
+        bool engineMaxed = engineLevel >= maxUpgradeLevel;
+        return nextModuleExists && fuelMaxed && engineMaxed;
     }
 
     // The price of the upgrade level that would have come next, times the multiplier
-    private int GetModuleBuyCost(UpgradeType type)
+    private int GetModuleBuyCost()
     {
-        int nextLevel = GetTier(type) * maxUpgradeLevel;
+        int nextLevel = moduleTier * maxUpgradeLevel;
         return Mathf.RoundToInt(GetUpgradeCost(nextLevel) * moduleBuyCostMultiplier);
     }
 
@@ -485,7 +496,14 @@ public class GameManager : MonoBehaviour
         // Step 1: nothing left to buy at all
         if (GetLevel(type) >= maxUpgradeLevel)
         {
-            ui_functionality.SetUpgradeMessage(type, "Fully upgraded.");
+            if (moduleTier < maxModuleTier)
+            {
+                ui_functionality.SetUpgradeMessage(type, "Max the other part to unlock Mk " + (moduleTier + 1) + ".");
+            }
+            else
+            {
+                ui_functionality.SetUpgradeMessage(type, "Fully upgraded.");
+            }
             return;
         }
 
@@ -507,33 +525,35 @@ public class GameManager : MonoBehaviour
         RefreshUpgradeUI();
     }
 
-    private void BuyModule(UpgradeType type)
+    private void BuyModule()
     {
-        // Step 1: refuse if the player cannot afford it
-        int cost = GetModuleBuyCost(type);
+        // Step 1: one price for both parts
+        int cost = GetModuleBuyCost();
 
         if (credits < cost)
         {
-            ui_functionality.SetUpgradeMessage(type, "Not enough credits.");
+            ui_functionality.SetUpgradeMessage(UpgradeType.FuelCapacity, "Not enough credits.");
+            ui_functionality.SetUpgradeMessage(UpgradeType.EnginePower, "Not enough credits.");
             return;
         }
 
-        // Step 2: spend, and give the stat jump of the new module
         credits -= cost;
 
+        // Step 2: the stat jump of the new module is applied to BOTH parts
         for (int i = 0; i < moduleBuyBonusSteps; i++)
         {
-            ApplyStat(type);
+            ApplyStat(UpgradeType.FuelCapacity);
+            ApplyStat(UpgradeType.EnginePower);
         }
 
-        // Step 3: a new module generation, with its upgrade levels starting again
-        int newTier = GetTier(type) + 1;
-        SetTier(type, newTier);
-        SetLevel(type, 0);
-        
-        OnModuleTierChanged?.Invoke(type, newTier);
+        // Step 3: a new module generation, both level counters start again
+        moduleTier++;
+        fuelLevel = 0;
+        engineLevel = 0;
 
-        // Step 4: every module bought adds a stage to the rocket
+        OnModuleTierChanged?.Invoke(moduleTier);
+
+        // Step 4: the module adds one stage to the rocket (plays the attach animation)
         UpdateRocketTier();
 
         ClearUpgradeMessages();
@@ -562,18 +582,6 @@ public class GameManager : MonoBehaviour
         else
         {
             engineLevel = value;
-        }
-    }
-
-    private void SetTier(UpgradeType type, int value)
-    {
-        if (type == UpgradeType.FuelCapacity)
-        {
-            fuelTier = value;
-        }
-        else
-        {
-            engineTier = value;
         }
     }
 
@@ -615,7 +623,7 @@ public class GameManager : MonoBehaviour
     private void RefreshCard(UpgradeType type, string baseName, string upgradeEffect, string buyEffect)
     {
         int level = GetLevel(type);
-        int tier = GetTier(type);
+        int tier = moduleTier;
 
         string title = baseName;
 
@@ -631,8 +639,22 @@ public class GameManager : MonoBehaviour
         }
         else if (tier < maxModuleTier)
         {
-            string cost = GetModuleBuyCost(type).ToString("N0") + " credits";
-            ui_functionality.SetUpgradeCard(type, title, level, buyEffect, cost, "Buy Mk " + (tier + 1), true);
+            if (CanBuyModule())
+            {
+                // Both cards show the same shared purchase
+                string cost = GetModuleBuyCost().ToString("N0") + " credits";
+                ui_functionality.SetUpgradeCard(type, title, level, buyEffect, cost, "Buy Mk " + (tier + 1), true);
+            }
+            else
+            {
+                // This part is 5/5, the other one is not yet
+                ui_functionality.SetUpgradeCard(type, title, level, "Waiting for the other part", "", "Locked", false);
+            }
+        }
+        else if (IsBoosterEligible() && rocket.BoosterCount < rocket.BoosterMax)
+        {
+            string cost = boosterCost.ToString("N0") + " credits";
+            ui_functionality.SetUpgradeCard(type, title, level, "Adds 1.25x fuel", cost, "Buy Booster", true);
         }
         else
         {
@@ -653,8 +675,7 @@ public class GameManager : MonoBehaviour
         }
 
         // The flight deck is stage 1, and every bought module adds one more
-        int tier = 1 + (fuelTier - 1) + (engineTier - 1);
-        return Mathf.Min(tier, rocket.StageCount);
+        return Mathf.Min(moduleTier, rocket.StageCount);
     }
 
     // After a purchase: if a new stage was earned, play the attach animation
@@ -676,8 +697,33 @@ public class GameManager : MonoBehaviour
         rocket.SetTier(rocketTier, true);
     }
 
-    // Each stage owns an equal share of the fuel. When the share of the lowest
-    // stage is used up, it separates (RocketAssembly plays the animation).
+    private bool IsBoosterEligible()
+    {
+        return moduleTier == maxModuleTier
+            && fuelLevel >= maxUpgradeLevel
+            && engineLevel >= maxUpgradeLevel;
+    }
+
+    private void BuyBooster()
+    {
+        if (credits < boosterCost)
+        {
+            ui_functionality.SetUpgradeMessage(UpgradeType.FuelCapacity, "Not enough credits.");
+            ui_functionality.SetUpgradeMessage(UpgradeType.EnginePower, "Not enough credits.");
+            return;
+        }
+
+        credits -= boosterCost;
+
+        // The rocket model shows the booster, the ship applies the 1.25x fuel
+        rocket.SetBoosterCount(rocket.BoosterCount + 1);
+        ship.SetBoosterCount(rocket.BoosterCount);
+
+        // Refresh UI
+        ClearUpgradeMessages();
+        RefreshUpgradeUI();
+    }
+
     private void UpdateStaging(float fuelAmount, float fuelCapacity)
     {
         if (rocket == null || !rocketReady || fuelCapacity <= 0f)

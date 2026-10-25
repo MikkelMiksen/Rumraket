@@ -3,7 +3,12 @@ using UnityEngine;
 public class LaunchBehaviour_01 : MonoBehaviour
 {
     [SerializeField] private float Fuel_Amount, Fuel_Capacity, Engine_Thrust_Power, Engine_Consumption_Factor;
+    private int boosterCount = 0;
+    private float baseFuelCapacity;
     [SerializeField] private Rigidbody rb;
+
+    public int MkUpgradeLevel { get; private set; } = 0; // Starts at 0, max 5
+    public int BoosterUpgradeLevel { get; private set; } = 0; // Starts at 0, max 5
 
     // How much one upgrade level adds
     [SerializeField] private float fuelUpgradeAmount = 1f;
@@ -21,13 +26,41 @@ public class LaunchBehaviour_01 : MonoBehaviour
     public float GetEngineUpgradeAmount() => engineUpgradeAmount;
 
     // Setters: replace the value (so callers pass the new total, e.g. Get...() + 1)
-    public void SetFuelCapacity(float newCapacity) => Fuel_Capacity = newCapacity;
+    public void SetFuelCapacity(float newCapacity)
+    {
+        baseFuelCapacity = newCapacity;
+        UpdateFuelCapacity();
+    }
     public void SetETP(float newEtp) => Engine_Thrust_Power = newEtp;
+
+    public void SetBoosterCount(int count)
+    {
+        boosterCount = count;
+        UpdateFuelCapacity();
+    }
+
+    public void IncrementMkUpgradeLevel()
+    {
+        if (MkUpgradeLevel < 5) MkUpgradeLevel++;
+    }
+
+    public void IncrementBoosterUpgradeLevel()
+    {
+        if (BoosterUpgradeLevel < 5) BoosterUpgradeLevel++;
+    }
+
+    private void UpdateFuelCapacity()
+    {
+        // Each booster multiplies the capacity by 1.25 (1.25x, 1.56x, 1.95x, 2.44x)
+        Fuel_Capacity = baseFuelCapacity * Mathf.Pow(1.25f, boosterCount);
+    }
 
     // Applies one upgrade level. GameManager checks the cost before calling these.
     public void OnFuelUpgrade()
     {
-        Fuel_Capacity += fuelUpgradeAmount;
+        // Change the base value, so boosters keep multiplying the upgraded capacity
+        baseFuelCapacity += fuelUpgradeAmount;
+        UpdateFuelCapacity();
     }
 
     public void OnEngineUpgrade()
@@ -59,6 +92,7 @@ public class LaunchBehaviour_01 : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        baseFuelCapacity = Fuel_Capacity;
         Fuel_Amount = Fuel_Capacity;
     }
 

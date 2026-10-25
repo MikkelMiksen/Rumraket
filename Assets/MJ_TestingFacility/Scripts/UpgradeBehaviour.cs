@@ -15,16 +15,16 @@ public class UpgradeBehaviour : MonoBehaviour
     {
         VisualElement root = GetComponent<UIDocument>().rootVisualElement;
         
-        fuelButton.clicked += OnFuelUpgrade;
-        engineButton.clicked += OnEngineUpgrade;
+        fuelButton = root.Q("fuelCard").Q<Button>("buyButton");
+        engineButton = root.Q("engineCard").Q<Button>("buyButton");
+
+        if (fuelButton != null) fuelButton.clicked += OnMkUpgrade;
+        if (engineButton != null) engineButton.clicked += OnBoosterUpgrade;
     }
     
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-        
-        var root = GetComponent<UIDocument>().rootVisualElement;
-        root.Q<Button>("fuelUpgradeButton").clicked += OnFuelUpgrade;
     }
 
     public int CalculateCost()
@@ -40,19 +40,41 @@ public class UpgradeBehaviour : MonoBehaviour
         score = GameObject.FindGameObjectWithTag("Data").GetComponent<FlightDataLogger>().GetScore();
     }
 
-    void OnFuelUpgrade()
+    void OnMkUpgrade()
     {
         if (score >= cost)
         {
-            player.GetComponent<LaunchBehaviour_01>().SetFuelCapacity(player.GetComponent<LaunchBehaviour_01>().GetFuelCapacity() + 1);
+            var launchBehaviour = player.GetComponent<LaunchBehaviour_01>();
+            if (launchBehaviour.MkUpgradeLevel < 5)
+            {
+                launchBehaviour.SetFuelCapacity(launchBehaviour.GetFuelCapacity() + 1);
+                launchBehaviour.SetETP(launchBehaviour.GetETPAmount() + 1);
+                launchBehaviour.IncrementMkUpgradeLevel();
+                
+                var rocket = player.GetComponent<RocketAssembly>();
+                if (rocket != null)
+                {
+                    rocket.SetTier(rocket.Tier + 1);
+                }
+            }
         }
     }
 
-    public void OnEngineUpgrade()
+    public void OnBoosterUpgrade()
     {
         if (score >= cost)
         {
-            player.GetComponent<LaunchBehaviour_01>().SetETP(player.GetComponent<LaunchBehaviour_01>().GetETPAmount() + 1);
+            var launchBehaviour = player.GetComponent<LaunchBehaviour_01>();
+            if (launchBehaviour.BoosterUpgradeLevel < 5)
+            {
+                var rocket = player.GetComponent<RocketAssembly>();
+                if (rocket != null && rocket.BoosterCount < rocket.BoosterMax)
+                {
+                    rocket.SetBoosterCount(rocket.BoosterCount + 1);
+                    launchBehaviour.SetBoosterCount(rocket.BoosterCount);
+                    launchBehaviour.IncrementBoosterUpgradeLevel();
+                }
+            }
         }
     }
 }

@@ -81,8 +81,8 @@ public class UIFunctionalityProvider
     private Label fuelValue;
 
     // ---------- Run summary ----------
-    private Label distanceRaw;
-    private Label distancePointsLabel;
+    private Label heightRaw;
+    private Label heightPointsLabel;
     private Label speedRaw;
     private Label speedPointsLabel;
     private Label newBestLabel;
@@ -98,6 +98,7 @@ public class UIFunctionalityProvider
     // Call once from GameManager.Start, with uiDocument.rootVisualElement.
     public void Init(VisualElement root)
     {
+        Debug.Log("UIFunctionalityProvider: Init called.");
         // Step 1: find the five pages
         pageTitle = Require<VisualElement>(root, "pageTitle");
         pageLaunchPad = Require<VisualElement>(root, "pageLaunchPad");
@@ -138,10 +139,10 @@ public class UIFunctionalityProvider
         fuelValue = Require<Label>(pageHud, "fuelValue");
 
         // Step 6: run summary rows and labels
-        VisualElement distanceRow = Require<VisualElement>(pageSummary, "distanceRow");
+        VisualElement heightRow = Require<VisualElement>(pageSummary, "distanceRow");   // UXML name, rename there later
         VisualElement speedRow = Require<VisualElement>(pageSummary, "speedRow");
-        distanceRaw = Require<Label>(distanceRow, "rowRaw");
-        distancePointsLabel = Require<Label>(distanceRow, "rowPoints");
+        heightRaw = Require<Label>(heightRow, "rowRaw");
+        heightPointsLabel = Require<Label>(heightRow, "rowPoints");
         speedRaw = Require<Label>(speedRow, "rowRaw");
         speedPointsLabel = Require<Label>(speedRow, "rowPoints");
         newBestLabel = Require<Label>(pageSummary, "newBestLabel");
@@ -292,13 +293,13 @@ public class UIFunctionalityProvider
     }
 
     public void SetSummary(
-        int heightMeters, int distancePoints,
+        int heightMeters, int heightPoints,
         int topSpeed, int speedPoints,
         int totalPoints, float conversionRate,
         int creditsEarned, bool isNewBest)
     {
-        distanceRaw.text = heightMeters.ToString("N0") + " m";
-        distancePointsLabel.text = distancePoints.ToString("N0") + " pts";
+        heightRaw.text = heightMeters.ToString("N0") + " m";
+        heightPointsLabel.text = heightPoints.ToString("N0") + " pts";
         speedRaw.text = topSpeed.ToString("N0") + " m/s";
         speedPointsLabel.text = speedPoints.ToString("N0") + " pts";
 
@@ -319,7 +320,11 @@ public class UIFunctionalityProvider
     // Click handlers: each one only raises an event
     // ===================================================================
 
-    private void OnPlayButton() { PlayClicked?.Invoke(); }
+    private void OnPlayButton() 
+    { 
+        Debug.Log("UIFunctionalityProvider: Play button clicked.");
+        PlayClicked?.Invoke(); 
+    }
     private void OnUpgradesButton() { UpgradesClicked?.Invoke(); }
     private void OnLaunchButton() { LaunchClicked?.Invoke(); }
     private void OnBackButton() { BackClicked?.Invoke(); }

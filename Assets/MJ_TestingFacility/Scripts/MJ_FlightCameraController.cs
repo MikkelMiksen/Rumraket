@@ -6,25 +6,29 @@ namespace MJ_TestingFacility.Scripts
     public class MJ_FlightCameraController : MonoBehaviour
     {
         [SerializeField] private GameManager gameManager;
-        [SerializeField] private float lerpSpeed = 5f;
         public Transform follow_position_target;
-        private GameObject[] objects_to_follow;
+        private GameObject[] stayHereTargets = new GameObject[3];
+        private GameObject lookHere;
 
-        [SerializeField] public Transform lookat_target;
-        
         void Awake()
         {
-            objects_to_follow = new GameObject[3];
-            GameObject[] foundTargets = GameObject.FindGameObjectsWithTag("FlightTarget");
-            SortFlightTargets(foundTargets);
+            stayHereTargets[0] = GameObject.Find("StayHereMK.1");
+            stayHereTargets[1] = GameObject.Find("StayHereMK.2");
+            stayHereTargets[2] = GameObject.Find("StayHereMK.3");
+            lookHere = GameObject.Find("LookHereUnderFlight");
 
             if (gameManager != null)
             {
                 gameManager.OnModuleTierChanged += OnModuleTierChanged;
-                if (objects_to_follow.Length > 0 && objects_to_follow[0] != null)
-                {
-                    follow_position_target = objects_to_follow[0].transform;
-                }
+                if (stayHereTargets[0] != null) follow_position_target = stayHereTargets[0].transform;
+            }
+        }
+
+        void Start()
+        {
+            if (gameManager != null && gameManager.Ship != null)
+            {
+                transform.SetParent(gameManager.Ship.transform);
             }
         }
 
@@ -36,41 +40,50 @@ namespace MJ_TestingFacility.Scripts
             }
         }
 
-        private void OnModuleTierChanged(UpgradeType type, int newTier)
+        private void OnModuleTierChanged(int newTier)
         {
-            Debug.Log("Module tier changed: " + type + " to " + newTier);
+            Debug.Log("Module tier changed to " + newTier);
             if (newTier >= 1 && newTier <= 3)
             {
-                follow_position_target = objects_to_follow[newTier - 1]?.transform;
+                follow_position_target = stayHereTargets[newTier - 1]?.transform;
             }
         }
         
-        public void SetCameraTarget(Transform positionTarget, Transform lookatTarget)
+        public void SetCameraTarget(Transform positionTarget)
         {
             follow_position_target = positionTarget;
-            this.lookat_target = lookatTarget;
         }
 
-        void Update()
+        void FixedUpdate()
         {
-            if (follow_position_target != null)
+            if (gameManager != null && gameManager.CurrentState != GameState.Flying)
             {
-                transform.position = Vector3.Lerp(transform.position, follow_position_target.position, Time.deltaTime * lerpSpeed);
-                if (lookat_target != null)
+                GameObject launchPadTarget = GameObject.FindGameObjectWithTag("LaunchPadTarget");
+                if (launchPadTarget != null)
                 {
-                    transform.LookAt(lookat_target.position);
+                    transform.position = launchPadTarget.transform.position;
+                    transform.rotation = launchPadTarget.transform.rotation;
+                    return;
                 }
             }
-        }
 
-        private void SortFlightTargets(GameObject[] objects_to_sort_by_name)
-        {
-            foreach (GameObject obj in objects_to_sort_by_name)
+            if (follow_position_target != null)
             {
-                if(obj.name.Contains("1")) objects_to_follow[0] = obj;
-                else if(obj.name.Contains("2")) objects_to_follow[1] = obj;
-                else if(obj.name.Contains("3")) objects_to_follow[2] = obj;
+                // Calculate position relative to ship if camera is a child
+                Vector3 targetLocalPos = follow_position_target.localPosition;
+                
+                
+                // If not a child, calculate relative to ship
+                if (transform.parent != null && transform.parent != follow_position_target.parent)
+                {
+                    targetLocalPos = transform.parent.InverseTransformPoint(follow_position_target.position);
+                    
+                }
+
+                transform.localPosition = targetLocalPos;
+                transform.LookAt(lookHere.transform);
             }
         }
+
     }
 }
