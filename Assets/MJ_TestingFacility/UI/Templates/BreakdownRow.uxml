@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../Theme.uss" />
+    <ui:VisualElement name="rowRoot" class="panel breakdown-row">
+        <ui:Label name="rowLabel" text="Label" class="row-label" />
+        <ui:Label name="rowRaw" text="" class="row-raw" />
+        <ui:Label name="rowPoints" text="0 pts" class="row-points" />
+    </ui:VisualElement>
+</ui:UXML>

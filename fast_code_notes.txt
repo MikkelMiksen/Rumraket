@@ -1,0 +1,3 @@
+﻿# Interaction Mode: [FAST_CODE]
+
+I am replacing the custom rotation logic in `CameraRig.cs` with `transform.LookAt()` to simplify camera behavior during flight, as requested.

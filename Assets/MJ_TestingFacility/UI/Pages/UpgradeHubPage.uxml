@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../Theme.uss" />
+    <ui:Template name="UpgradeCard" src="../Templates/UpgradeCard.uxml" />
+    <ui:VisualElement name="upgradeHubRoot" class="page-content" picking-mode="Ignore">
+        <ui:VisualElement class="page-header" picking-mode="Ignore">
+            <ui:Button name="backButton" text="Back" class="btn btn--small" />
+            <ui:Label text="Upgrade hub" class="text-heading" />
+            <ui:Label name="creditsLabel" text="0 credits" class="text-currency" />
+        </ui:VisualElement>
+        <ui:VisualElement name="cardRow" class="card-row" picking-mode="Ignore">
+            <ui:VisualElement name="cardColumnLeft" class="card-column" picking-mode="Ignore">
+                <ui:Instance template="UpgradeCard" name="fuelCard">
+                    <ui:AttributeOverrides element-name="cardName" text="Fuel capacity" />
+                </ui:Instance>
+            </ui:VisualElement>
+            <ui:VisualElement class="spacer" picking-mode="Ignore" />
+            <ui:VisualElement name="cardColumnRight" class="card-column" picking-mode="Ignore">
+                <ui:Instance template="UpgradeCard" name="engineCard">
+                    <ui:AttributeOverrides element-name="cardName" text="Engine power" />
+                </ui:Instance>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:Label name="statsLabel" text="" class="text-muted text-center stats-label" />
+    </ui:VisualElement>
+</ui:UXML>
