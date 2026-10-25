@@ -3,24 +3,20 @@ using UnityEngine;
 
 public class CamBehaviour_01 : MonoBehaviour
 {
-    [SerializeField] private float followSpeed;
-    [SerializeField] private GameObject cat;
+    private Vector3 _offset;
+    [SerializeField] private float smoothTime;
+    [SerializeField] private GameObject target;
+    private Vector3 currentVelocity = Vector3.zero;
 
     // Update is called once per frame
-    void Update()
+    void Awake()
     {
-        transform.LookAt(cat.transform);
+        _offset = transform.position - target.transform.position;
+    }
 
-        if (cat.transform.position.y >= 30)
-        {
-            transform.position = Vector3.MoveTowards(transform.position ,
-                new Vector3(transform.position.x, 
-                    cat.transform.position.y - 20, 
-                    transform.position.z), 
-                Time.deltaTime * followSpeed * 
-                Vector3.Distance(cat.transform.position, 
-                    transform.position)
-            );
-        }
+    void FixedUpdate()
+    {
+        Vector3 targetPosition = target.transform.position + _offset;
+        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref currentVelocity, smoothTime);
     }
 }

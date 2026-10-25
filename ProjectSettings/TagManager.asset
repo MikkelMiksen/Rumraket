@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - Data
+  - Asteroid
   layers:
   - Default
   - TransparentFX

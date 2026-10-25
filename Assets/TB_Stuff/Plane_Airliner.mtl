@@ -1,0 +1,32 @@
+newmtl Blue
+Kd 0.27 0.52 0.88
+Ka 0 0 0
+Ks 0 0 0
+Ns 0
+d 1
+illum 1
+
+newmtl Grey
+Kd 0.72 0.77 0.84
+Ka 0 0 0
+Ks 0 0 0
+Ns 0
+d 1
+illum 1
+
+newmtl LightBlue
+Kd 0.8 0.88 0.98
+Ka 0 0 0
+Ks 0 0 0
+Ns 0
+d 1
+illum 1
+
+newmtl White
+Kd 0.97 0.98 1.0
+Ka 0 0 0
+Ks 0 0 0
+Ns 0
+d 1
+illum 1
+
