@@ -26,7 +26,7 @@ MonoBehaviour:
   Parameters: []
   MinDistance: 1
   MaxDistance: 20
-  Length: 7906
+  Length: 68000
 --- !u!114 &-8596420050728493126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,7 +123,7 @@ MonoBehaviour:
   Path: Fmod Banks/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639285109037680101
+  lastModified: 639285118315667787
   FileSizes: []
   Exists: 1
 --- !u!114 &-5903667016248094696
@@ -217,7 +217,7 @@ MonoBehaviour:
   StringsBanks:
   - {fileID: 607050441567360368}
   cacheVersion: 131859
-  cacheTime: 639285109037690216
+  cacheTime: 639285118315667787
   SerializableEventsDict:
   - key: event:/Test
     index: 0
@@ -247,6 +247,8 @@ MonoBehaviour:
     index: 12
   - key: event:/UI_Launch
     index: 13
+  - key: event:/UI_Hover
+    index: 14
 --- !u!114 &333737366273482926
 MonoBehaviour:
   m_ObjectHideFlags: 0
