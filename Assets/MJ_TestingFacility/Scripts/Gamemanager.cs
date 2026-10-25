@@ -26,6 +26,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int maxUpgradeLevel = 5;
     [SerializeField] private int baseUpgradeCost = 100;
     [SerializeField] private float upgradeCostGrowth = 1.5f;
+    [SerializeField] private float heightCreditsPerPoint = 100;
+    [SerializeField] private float speedCreditsPerPoint = 100;
 
     [Header("Module purchases (after the last upgrade level)")]
     [Tooltip("How many module generations each part can reach. 2 = the original plus one bought upgrade.")]
@@ -511,10 +513,9 @@ public class GameManager : MonoBehaviour
 
         // Step 3: show the breakdown
         ui_functionality.SetSummary(
-            Mathf.FloorToInt(runMaxHeight), heightPoints,
-            Mathf.FloorToInt(runMaxSpeed), speedPoints,
-            totalPoints, creditsPerPoint,
-            creditsEarned, isNewBest);
+            Mathf.FloorToInt(runMaxHeight), heightPoints, heightCreditsPerPoint,
+            Mathf.FloorToInt(runMaxSpeed), speedPoints, speedCreditsPerPoint,
+            totalPoints, creditsEarned, isNewBest);
 
         rocketNeedsRestore = true;
         wasSteering = false;   // SoundManager has already stopped the thruster
