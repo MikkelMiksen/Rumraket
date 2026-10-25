@@ -17,7 +17,16 @@ public class LaunchBehaviour_01 : MonoBehaviour
     // Gravity strength once the tank is empty (2 = twice normal gravity)
     [SerializeField] private float emptyTankGravityMultiplier = 2f;
 
+    [Header("Steering")]
+    [Tooltip("World axis the rocket spins around. Z = side view, camera looking along +Z.")]
+    [SerializeField] private Vector3 steerAxis = Vector3.forward;
+    [Tooltip("Spin acceleration at full input, in radians per second squared.")]
+    [SerializeField] private float steerTorque = 2f;
+    [Tooltip("Tick this if the rocket spins the wrong way.")]
+    [SerializeField] private bool invertSteering;
+
     private bool isFlying;
+    private float steerInput;   // -1 (left) to +1 (right)
 
     public float GetETPAmount() => Engine_Thrust_Power;
     public float GetFuelCapacity() => Fuel_Capacity;
@@ -68,6 +77,12 @@ public class LaunchBehaviour_01 : MonoBehaviour
         Engine_Thrust_Power += engineUpgradeAmount;
     }
 
+    // GameManager passes the horizontal input here every frame while flying
+    public void SetSteerInput(float input)
+    {
+        steerInput = Mathf.Clamp(input, -1f, 1f);
+    }
+
     // GameManager calls this when the Flying state starts
     public void StartEngine()
     {
@@ -82,6 +97,7 @@ public class LaunchBehaviour_01 : MonoBehaviour
 
         // Engine off until StartEngine is called
         isFlying = false;
+        steerInput = 0f;
 
         // Remove leftover motion
         rb.linearVelocity = Vector3.zero;
@@ -120,5 +136,13 @@ public class LaunchBehaviour_01 : MonoBehaviour
 
         Fuel_Amount -= Engine_Consumption_Factor * Time.fixedDeltaTime;
         rb.AddForce(transform.up * (Engine_Thrust_Power * 15));
+
+        // Steering: horizontal input spins the rocket around steerAxis.
+        // Acceleration mode ignores the rocket's mass, so the feel stays the same
+        // however the colliders and parts change.
+        // Right input = clockwise when the camera looks along the axis.
+        float direction = invertSteering ? 1f : -1f;
+        Vector3 torque = steerAxis.normalized * (steerInput * direction * steerTorque);
+        rb.AddTorque(torque, ForceMode.Acceleration);
     }
 }
