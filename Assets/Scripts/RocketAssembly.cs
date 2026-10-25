@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using FMODUnity;
+using FMOD.Studio;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -241,6 +243,7 @@ public class RocketAssembly : MonoBehaviour
 
     IEnumerator SlideIn(int i, float delay)
     {
+        RuntimeManager.PlayOneShot("event:/Construction");
         if (delay > 0f) yield return new WaitForSeconds(delay);
 
         Transform body = stages[i].body;
@@ -365,6 +368,7 @@ public class RocketAssembly : MonoBehaviour
 
     IEnumerator ReleaseStage(Stage gone, int index)
     {
+        RuntimeManager.PlayOneShot("event:/Rocket_Explotion");
         if (stageReleaseDelay > 0f) yield return new WaitForSeconds(stageReleaseDelay);
 
         // Spent stage falls away backwards.

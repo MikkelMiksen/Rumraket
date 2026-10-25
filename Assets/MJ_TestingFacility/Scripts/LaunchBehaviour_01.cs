@@ -25,8 +25,17 @@ public class LaunchBehaviour_01 : MonoBehaviour
     [Tooltip("Tick this if the rocket spins the wrong way.")]
     [SerializeField] private bool invertSteering;
 
+    [Header("Pitch (W / S)")]
+    [Tooltip("The other horizontal world axis. X when the camera looks along +Z.")]
+    [SerializeField] private Vector3 pitchAxis = Vector3.right;
+    [Tooltip("Spin acceleration at full input, in radians per second squared.")]
+    [SerializeField] private float pitchTorque = 2f;
+    [Tooltip("Tick this if W tips the nose towards the camera instead of away.")]
+    [SerializeField] private bool invertPitch;
+
     private bool isFlying;
     private float steerInput;   // -1 (left) to +1 (right)
+    private float pitchInput;   // -1 (S) to +1 (W)
 
     public float GetETPAmount() => Engine_Thrust_Power;
     public float GetFuelCapacity() => Fuel_Capacity;
@@ -78,9 +87,11 @@ public class LaunchBehaviour_01 : MonoBehaviour
     }
 
     // GameManager passes the horizontal input here every frame while flying
-    public void SetSteerInput(float input)
+    // x = horizontal (A/D), y = vertical (W/S)
+    public void SetSteerInput(Vector2 input)
     {
-        steerInput = Mathf.Clamp(input, -1f, 1f);
+        steerInput = Mathf.Clamp(input.x, -1f, 1f);
+        pitchInput = Mathf.Clamp(input.y, -1f, 1f);
     }
 
     // GameManager calls this when the Flying state starts
@@ -98,6 +109,7 @@ public class LaunchBehaviour_01 : MonoBehaviour
         // Engine off until StartEngine is called
         isFlying = false;
         steerInput = 0f;
+        pitchInput = 0f;
 
         // Remove leftover motion
         rb.linearVelocity = Vector3.zero;
@@ -144,5 +156,11 @@ public class LaunchBehaviour_01 : MonoBehaviour
         float direction = invertSteering ? 1f : -1f;
         Vector3 torque = steerAxis.normalized * (steerInput * direction * steerTorque);
         rb.AddTorque(torque, ForceMode.Acceleration);
+
+        // Pitch: vertical input spins the rocket around the other horizontal axis.
+        // W tips the nose away from a camera looking along +Z.
+        float pitchDirection = invertPitch ? -1f : 1f;
+        Vector3 pitch = pitchAxis.normalized * (pitchInput * pitchDirection * pitchTorque);
+        rb.AddTorque(pitch, ForceMode.Acceleration);
     }
 }

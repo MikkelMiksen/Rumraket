@@ -6,6 +6,7 @@ using MJ_TestingFacility.Scripts;
 
 // Which enemy was hit. The names must match the labels of the FMOD
 // parameter "Enemy" (Plane = 0, Bird = 1, Asteroid = 2).
+[ System.Serializable]
 public enum HitEnemy
 {
     Plane,

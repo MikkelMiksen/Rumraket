@@ -123,7 +123,7 @@ MonoBehaviour:
   Path: Fmod Banks/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 639285124967712123
+  lastModified: 639285166230628221
   FileSizes: []
   Exists: 1
 --- !u!114 &-5903667016248094696
@@ -153,6 +153,33 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 2325
+--- !u!114 &-5072128988677040911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/Construction
+  m_EditorClassIdentifier: FMODUnityEditor::FMODUnity.EditorEventRef
+  Path: event:/Construction
+  Guid:
+    Data1: 675242767
+    Data2: 1145644065
+    Data3: -1916186479
+    Data4: 1301990736
+  Banks:
+  - {fileID: -6425111427165114847}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 3399
 --- !u!114 &-2317785538083863969
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,13 +238,14 @@ MonoBehaviour:
   - {fileID: -7894391677069593542}
   - {fileID: 3006296090921858908}
   - {fileID: -5903667016248094696}
+  - {fileID: -5072128988677040911}
   EditorParameters: []
   MasterBanks:
   - {fileID: -6425111427165114847}
   StringsBanks:
   - {fileID: 607050441567360368}
   cacheVersion: 131859
-  cacheTime: 639285124967732580
+  cacheTime: 639285166230628221
   SerializableEventsDict:
   - key: event:/Test
     index: 0
@@ -249,6 +277,8 @@ MonoBehaviour:
     index: 13
   - key: event:/UI_Hover
     index: 14
+  - key: event:/Construction
+    index: 15
 --- !u!114 &333737366273482926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -291,10 +321,10 @@ MonoBehaviour:
   Path: Fmod Banks/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 639285124967732580
+  lastModified: 639285147651751945
   FileSizes:
   - Name: 
-    Value: 1396
+    Value: 1440
   Exists: 1
 --- !u!114 &873877623050887369
 MonoBehaviour:

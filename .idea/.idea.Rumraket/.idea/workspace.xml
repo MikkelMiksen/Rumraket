@@ -11,8 +11,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a1c9dc2c-09d7-4303-8a3e-9d090ddab3e5" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Rumraket/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Rumraket/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MJ_TestingFacility/Scripts/Gamemanager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MJ_TestingFacility/Scripts/Gamemanager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MJ_TestingFacility/Scripts/LaunchBehaviour_01.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MJ_TestingFacility/Scripts/LaunchBehaviour_01.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/MJ_TestingFacility/Scripts/SoundManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/MJ_TestingFacility/Scripts/SoundManager.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Plugins/FMOD/Cache/Editor/FMODStudioCache.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/FMOD/Cache/Editor/FMODStudioCache.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Plugins/FMOD/Resources/FMODStudioSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/FMOD/Resources/FMODStudioSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Plugins/FMOD/Resources/FMODStudioSettings.asset.meta" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Plugins/FMOD/Resources/FMODStudioSettings.asset.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/RocketAssembly.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/RocketAssembly.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -242,7 +242,7 @@ MonoBehaviour:
     prefabs:
     - {fileID: 3458713614135609137, guid: 65d49812d7e9edc4e871f463ab093001, type: 3}
     startAt: 0.03
-    endAt: 0.73
+    endAt: 1.5
     fade: 0.17
     interval: 2.2
     maxAlive: 10
@@ -255,7 +255,7 @@ MonoBehaviour:
     - {fileID: 5507600729585247177, guid: 6e7564f0cb47aee4f986b5b2c454f836, type: 3}
     - {fileID: 3464603110576005130, guid: a99f86057ddb67744ba4b40211c12297, type: 3}
     startAt: 0.47
-    endAt: 1.4
+    endAt: 10.5
     fade: 0.27
     interval: 4.5
     maxAlive: 4
@@ -268,22 +268,28 @@ MonoBehaviour:
     - {fileID: 4281806578162908557, guid: 6bef7417e599c6e44adbe5d6d72f24a1, type: 3}
     - {fileID: 2510129605138448600, guid: 69d6e0d30d9a5d347af08c6306de70a0, type: 3}
     - {fileID: 2397791020797287278, guid: ce2f90957e50bbc46936fb171cc4957c, type: 3}
-    startAt: 1.29
-    endAt: 99
+    startAt: 14
+    endAt: 1e+18
     fade: 0.29
     interval: 2.5
-    maxAlive: 10
+    maxAlive: 100
     aimedChance: 0.5
     groupMin: 1
     groupMax: 2
-    groupSpread: 15
+    groupSpread: 30
   crossAxis: {x: 1, y: 0, z: 0}
   minAhead: 60
   maxAhead: 160
+  leadTimeMin: 1.5
+  leadTimeMax: 3.5
+  referenceSpeed: 40
+  maxRateBoost: 3
   maxSide: 90
   aimError: 5
   looseSpread: 45
   depthSpread: 0
+  followShip: 1
+  followFraction: 0.97
   minShipSpeed: 2
   cleanupBehind: 120
 --- !u!1 &330585543
@@ -1296,13 +1302,12 @@ MonoBehaviour:
   rocket: {fileID: 1448876924}
   pad: {fileID: 1184268339}
   sound: {fileID: 2007057325}
-  startingCredits: 2137483647
-  creditsPerPoint: 1
+  startingCredits: 0
+  heightCreditsPerPoint: 1
+  speedCreditsPerPoint: 2
   maxUpgradeLevel: 5
-  baseUpgradeCost: 1
-  upgradeCostGrowth: 3.5
-  heightCreditsPerPoint: 100
-  speedCreditsPerPoint: 100
+  baseUpgradeCost: 10
+  upgradeCostGrowth: 3.37
   maxModuleTier: 3
   moduleBuyCostMultiplier: 5
   moduleBuyBonusSteps: 3
@@ -1312,11 +1317,25 @@ MonoBehaviour:
   - name: Ground
     height: 0
   - name: Atmosphere
-    height: 1000
-  - name: Orbit
-    height: 250000
-  - name: Galaxy
-    height: 1000000
+    height: 2500
+  - name: orbit
+    height: 10000
+  - name: space
+    height: 14500
+  - name: moon
+    height: 26100
+  - name: mars
+    height: 36540
+  - name: jupiter
+    height: 52140
+  - name: saturn
+    height: 104280
+  - name: uranus
+    height: 173271
+  - name: neptune
+    height: 312120000
+  - name: pluto
+    height: 6.2424e+10
 --- !u!1 &1413834742
 GameObject:
   m_ObjectHideFlags: 0
@@ -1426,15 +1445,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LaunchBehaviour_01
   Fuel_Amount: 0
   Fuel_Capacity: 1
-  Engine_Thrust_Power: 1
-  Engine_Consumption_Factor: 1
+  Engine_Thrust_Power: 0.725
+  Engine_Consumption_Factor: 0.9
   rb: {fileID: 1448876925}
-  fuelUpgradeAmount: 1
-  engineUpgradeAmount: 1
-  emptyTankGravityMultiplier: 1
+  fuelUpgradeAmount: 2.37
+  engineUpgradeAmount: 0.15
+  emptyTankGravityMultiplier: 5
   steerAxis: {x: 0, y: 0, z: 1}
   steerTorque: 2
   invertSteering: 0
+  pitchAxis: {x: 1, y: 0, z: 0}
+  pitchTorque: 2
+  invertPitch: 0
 --- !u!4 &1477985533 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2695028234982171699, guid: 11ecd99d280847245be54f2659d437f0, type: 3}

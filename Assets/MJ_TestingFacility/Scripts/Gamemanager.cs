@@ -22,12 +22,13 @@ public class GameManager : MonoBehaviour
 
     [Header("Tuning")]
     [SerializeField] private int startingCredits = 0;
-    [SerializeField] private float creditsPerPoint = 1f;
+    [Tooltip("Credits earned for each height point (1 point per metre of height).")]
+    [SerializeField] private float heightCreditsPerPoint = 1f;
+    [Tooltip("Credits earned for each speed point (1 point per m/s of top speed).")]
+    [SerializeField] private float speedCreditsPerPoint = 1f;
     [SerializeField] private int maxUpgradeLevel = 5;
     [SerializeField] private int baseUpgradeCost = 100;
     [SerializeField] private float upgradeCostGrowth = 1.5f;
-    [SerializeField] private float heightCreditsPerPoint = 100;
-    [SerializeField] private float speedCreditsPerPoint = 100;
 
     [Header("Module purchases (after the last upgrade level)")]
     [Tooltip("How many module generations each part can reach. 2 = the original plus one bought upgrade.")]
@@ -90,7 +91,6 @@ public class GameManager : MonoBehaviour
     public Rigidbody ShipBody => shipBody;
     public LaunchBehaviour_01 Ship => ship;
     public RocketAssembly Rocket => rocket;
-    
     public Milestone[] Milestones => milestones;
 
     private void Awake()
@@ -391,39 +391,51 @@ public class GameManager : MonoBehaviour
         ship.StartEngine();
     }
 
-    // Horizontal input: A/D or the arrow keys (or the old Input Manager's Horizontal axis)
-    private float ReadSteerInput()
+    // Steering input: x = A/D or left/right arrows, y = W/S or up/down arrows
+    // (or the old Input Manager's Horizontal and Vertical axes)
+    private Vector2 ReadSteerInput()
     {
 #if ENABLE_INPUT_SYSTEM
         Keyboard keyboard = Keyboard.current;
 
         if (keyboard == null)
         {
-            return 0f;
+            return Vector2.zero;
         }
 
-        float input = 0f;
+        float horizontal = 0f;
+        float vertical = 0f;
 
         if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed)
         {
-            input += 1f;
+            horizontal += 1f;
         }
 
         if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed)
         {
-            input -= 1f;
+            horizontal -= 1f;
         }
 
-        return input;
+        if (keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed)
+        {
+            vertical += 1f;
+        }
+
+        if (keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed)
+        {
+            vertical -= 1f;
+        }
+
+        return new Vector2(horizontal, vertical);
 #else
-        return Input.GetAxisRaw("Horizontal");
+        return new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 #endif
     }
 
     // The thruster sound plays while the player steers (on top of the engine)
-    private void UpdateThrusterSound(float steerInput)
+    private void UpdateThrusterSound(Vector2 steerInput)
     {
-        bool steering = Mathf.Abs(steerInput) > 0.01f;
+        bool steering = steerInput.sqrMagnitude > 0.0001f;
 
         if (steering == wasSteering)
         {
@@ -450,7 +462,7 @@ public class GameManager : MonoBehaviour
     private void UpdateFlight()
     {
         // Step 0: steering. The input spins the rocket, the thruster sound follows it
-        float steerInput = ReadSteerInput();
+        Vector2 steerInput = ReadSteerInput();
         ship.SetSteerInput(steerInput);
         UpdateThrusterSound(steerInput);
 
@@ -499,7 +511,11 @@ public class GameManager : MonoBehaviour
         int heightPoints = Mathf.FloorToInt(runMaxHeight);
         int speedPoints = Mathf.FloorToInt(runMaxSpeed);
         int totalPoints = heightPoints + speedPoints;
-        int creditsEarned = Mathf.FloorToInt(totalPoints * creditsPerPoint);
+
+        // Each measured attribute has its own rate. Rounded per attribute, so the rows add up.
+        int heightCredits = Mathf.FloorToInt(heightPoints * heightCreditsPerPoint);
+        int speedCredits = Mathf.FloorToInt(speedPoints * speedCreditsPerPoint);
+        int creditsEarned = heightCredits + speedCredits;
 
         // Step 2: update best height and bank the credits
         bool isNewBest = runMaxHeight > bestHeight;
