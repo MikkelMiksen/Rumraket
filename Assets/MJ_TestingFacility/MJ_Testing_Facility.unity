@@ -119,6 +119,51 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &267353978
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 267353979}
+  - component: {fileID: 267353980}
+  m_Layer: 0
+  m_Name: TitleAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &267353979
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 267353978}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7.13, y: 2, z: -3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &267353980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 267353978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 850c3eb6573a82744904249a1609266f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  rocket: {fileID: 1798338871}
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -130,6 +175,7 @@ GameObject:
   - component: {fileID: 330585546}
   - component: {fileID: 330585545}
   - component: {fileID: 330585544}
+  - component: {fileID: 330585547}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -211,6 +257,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &330585547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c7f0c9917ee439a9d7a3a5e0da638f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraRig
+  anchorSmoothing: 3
+  followSmoothing: 6
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -522,7 +582,7 @@ GameObject:
   - component: {fileID: 1316773130}
   - component: {fileID: 1316773131}
   m_Layer: 0
-  m_Name: PerLaunchTryTracker
+  m_Name: GameManager
   m_TagString: Data
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -555,28 +615,73 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc1fac2245d8430b9bcca7ac303e8598, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  uiDocument: {fileID: 0}
-  ship: {fileID: 0}
-  shipBody: {fileID: 0}
-  cameraRig: {fileID: 0}
-  titleAnchor: {fileID: 0}
-  padAnchor: {fileID: 0}
-  hubAnchor: {fileID: 0}
+  panelRenderer: {fileID: 680557603}
+  ship: {fileID: 1798338866}
+  shipBody: {fileID: 1798338867}
+  cameraRig: {fileID: 330585547}
+  titleAnchor: {fileID: 267353979}
+  padAnchor: {fileID: 1491567092}
+  hubAnchor: {fileID: 1850477399}
   startingCredits: 0
   creditsPerPoint: 1
-  fuelPerLevel: 1
-  enginePerLevel: 1
   maxUpgradeLevel: 5
-  baseUpgradeCost: 100
-  upgradeCostGrowth: 1.5
-  followOffset: {x: 0, y: 6, z: -20}
+  baseUpgradeCost: 1
+  upgradeCostGrowth: 3.5
+  followOffset: {x: 0, y: 10, z: -20}
   milestones:
   - name: Ground
     height: 0
   - name: Atmosphere
-    height: 150
+    height: 1000
   - name: Orbit
-    height: 500
+    height: 250000
+  - name: Galaxy
+    height: 1000000
+--- !u!1 &1491567091
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1491567092}
+  - component: {fileID: 1491567093}
+  m_Layer: 0
+  m_Name: 'PadAnchor '
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1491567092
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1491567091}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 11.61, y: 0.1, z: 2.33}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1491567093
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1491567091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 850c3eb6573a82744904249a1609266f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookAtRocket
+  rocket: {fileID: 1798338871}
 --- !u!1 &1798338865
 GameObject:
   m_ObjectHideFlags: 0
@@ -610,11 +715,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96c17e02fbd967c45a89adcbe23ea19c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  Fuel_Amount: 5
-  Fuel_Capacity: 5
+  Fuel_Amount: 1
+  Fuel_Capacity: 1
   Engine_Thrust_Power: 1
   Engine_Consumption_Factor: 1
-  rb: {fileID: 0}
+  rb: {fileID: 1798338867}
+  fuelUpgradeAmount: 1
+  engineUpgradeAmount: 1
+  emptyTankGravityMultiplier: 1
 --- !u!54 &1798338867
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -735,6 +843,51 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1850477398
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1850477399}
+  - component: {fileID: 1850477400}
+  m_Layer: 0
+  m_Name: HubAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1850477399
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1850477398}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.14, y: -0, z: -7.59}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1850477400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1850477398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 850c3eb6573a82744904249a1609266f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LookAtRocket
+  rocket: {fileID: 1798338871}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -745,3 +898,6 @@ SceneRoots:
   - {fileID: 1798338871}
   - {fileID: 1316773130}
   - {fileID: 680557604}
+  - {fileID: 267353979}
+  - {fileID: 1491567092}
+  - {fileID: 1850477399}

@@ -248,6 +248,20 @@
     background-color: var(--color-accent);
 }
 
+.card--buy {
+    border-color: var(--color-currency);
+}
+
+.card--buy .pip--filled {
+    background-color: var(--color-currency);
+}
+
+.card--buy .btn {
+    color: var(--color-on-accent);
+    background-color: var(--color-currency);
+    border-color: var(--color-currency);
+}
+
 .card-footer {
     flex-direction: row;
     align-items: center;

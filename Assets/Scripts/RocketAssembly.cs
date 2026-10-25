@@ -26,6 +26,9 @@ public class RocketAssembly : MonoBehaviour
         public Transform body;
         [Tooltip("The clamshell halves covering THIS stage's engine. Only visible while a stage is attached below it.")]
         public Transform[] shellHalves = new Transform[0];
+        // ADDED: colliders that belong to this stage but are NOT children of its body
+        [Tooltip("Colliders for this stage that are not children of its body (for example on the rocket root). Switched off while the stage is not attached. Colliders under the body are handled automatically.")]
+        public Collider[] colliders = new Collider[0];
     }
 
     public List<Stage> stages = new List<Stage>();
@@ -62,6 +65,9 @@ public class RocketAssembly : MonoBehaviour
 
     readonly Dictionary<Transform, Rest> rests = new Dictionary<Transform, Rest>();
     readonly HashSet<Transform> addedColliders = new HashSet<Transform>();
+    // ADDED: every collider of each stage, and whether it was enabled in the prefab
+    List<Collider>[] stageColliders;
+    readonly Dictionary<Collider, bool> colliderRest = new Dictionary<Collider, bool>();
     int lowest;   // index of the lowest stage that is currently attached
 
     public int Tier { get { return stages.Count - lowest; } }
@@ -117,8 +123,31 @@ public class RocketAssembly : MonoBehaviour
             Record(s.body);
             foreach (var h in s.shellHalves) Record(h);
         }
+        // ADDED: collect each stage's colliders before the first ApplyState
+        stageColliders = new List<Collider>[stages.Count];
+        for (int i = 0; i < stages.Count; i++)
+        {
+            var list = new List<Collider>();
+            foreach (var c in stages[i].colliders)
+                if (c && !list.Contains(c)) list.Add(c);
+            if (stages[i].body)
+                foreach (var c in stages[i].body.GetComponentsInChildren<Collider>(true))
+                    if (!list.Contains(c)) list.Add(c);
+            foreach (var c in list)
+                if (!colliderRest.ContainsKey(c)) colliderRest[c] = c.enabled;
+            stageColliders[i] = list;
+        }
+
         lowest = 0;
         ApplyState(0, 0);
+    }
+
+    // ADDED: switches a stage's colliders on or off (never turns on one that was off in the prefab)
+    void SetStageColliders(int i, bool on)
+    {
+        if (stageColliders == null) return;
+        foreach (var c in stageColliders[i])
+            if (c) c.enabled = on && colliderRest[c];
     }
 
     void Record(Transform t)
@@ -151,6 +180,7 @@ public class RocketAssembly : MonoBehaviour
         for (int i = oldLowest - 1; i >= newLowest; i--)   // top-most new stage connects first
         {
             if (stages[i].body) stages[i].body.gameObject.SetActive(false);
+            SetStageColliders(i, false);   // ADDED
             StartCoroutine(SlideIn(i, delay));
             delay += attachTime * 0.7f;
         }
@@ -164,6 +194,7 @@ public class RocketAssembly : MonoBehaviour
         {
             bool attached = i >= lowestAttached;
             if (stages[i].body) stages[i].body.gameObject.SetActive(attached);
+            SetStageColliders(i, attached);   // ADDED
             bool shellOn = attached && i > shellsFrom;
             foreach (var h in stages[i].shellHalves)
                 if (h) h.gameObject.SetActive(shellOn);
@@ -174,6 +205,7 @@ public class RocketAssembly : MonoBehaviour
     {
         if (delay > 0f) yield return new WaitForSeconds(delay);
 
+        SetStageColliders(i, true);   // ADDED: the stage is attached from here on
         Transform body = stages[i].body;
         if (body)
         {
@@ -233,6 +265,7 @@ public class RocketAssembly : MonoBehaviour
         foreach (var h in next.shellHalves)
             if (h && h.gameObject.activeSelf) StartCoroutine(PopShell(h));
 
+        SetStageColliders(index, false);   // ADDED: the dropped stage stops colliding with the rocket
         lowest++;
         StageSeparated?.Invoke(index);
         return true;
@@ -314,5 +347,8 @@ public class RocketAssembly : MonoBehaviour
             t.gameObject.SetActive(true);
         }
         addedColliders.Clear();
+
+        // ADDED: colliders come back with everything else
+        for (int i = 0; i < stages.Count; i++) SetStageColliders(i, true);
     }
 }

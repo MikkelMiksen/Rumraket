@@ -21,6 +21,10 @@ Show or hide a page by toggling the class `page--hidden`. Start state: only `pag
 ## Upgrade card (template `UpgradeCard`)
 `cardName`, `cardEffect`, `cardCost`, `cardMessage` (labels), `buyButton` (click), five `.pip` elements inside `cardPips`.
 Level display: add the class `pip--filled` to the first N pips (query `.pip`).
+The card has three modes, set from code with `SetUpgradeCard(type, title, level, effect, cost, buttonText, buyMode)`:
+- Upgrade: button reads "Upgrade".
+- Buy a new module (after the last level): `buyMode = true` adds the class `card--buy` to the card root (amber border, pips and button), and the button reads "Buy Mk N".
+- Maxed: button reads "Maxed", no cost.
 
 ## Adding things later
 - New HUD readout: add `Readout.uxml` as a new instance inside `readoutList` (or clone the template from code).
