@@ -1,0 +1,31 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../Theme.uss" />
+    <ui:Template name="Readout" src="../Templates/Readout.uxml" />
+    <ui:VisualElement name="hudRoot" class="page-content" picking-mode="Ignore">
+        <ui:VisualElement class="hud-top" picking-mode="Ignore">
+            <ui:VisualElement name="readoutList" class="readout-list" picking-mode="Ignore">
+                <ui:Instance template="Readout" name="speedReadout">
+                    <ui:AttributeOverrides element-name="readoutLabel" text="Speed" />
+                </ui:Instance>
+                <ui:Instance template="Readout" name="heightReadout">
+                    <ui:AttributeOverrides element-name="readoutLabel" text="Height" />
+                </ui:Instance>
+            </ui:VisualElement>
+            <ui:VisualElement class="spacer" picking-mode="Ignore" />
+            <ui:VisualElement name="journeyPanel" class="panel journey-panel">
+                <ui:Label name="journeyText" text="No flights yet" class="text-body" />
+                <ui:ProgressBar name="journeyProgress" class="progress" value="0" low-value="0" high-value="100" />
+                <ui:VisualElement class="journey-labels" picking-mode="Ignore">
+                    <ui:Label name="journeyFromLabel" text="Ground" class="text-muted text-small" />
+                    <ui:Label name="journeyToLabel" text="Atmosphere" class="text-muted text-small" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement class="spacer" picking-mode="Ignore" />
+        <ui:VisualElement name="fuelRow" class="fuel-row" picking-mode="Ignore">
+            <ui:Label text="Fuel" class="text-muted" />
+            <ui:ProgressBar name="fuelBar" class="progress progress--fuel" value="100" low-value="0" high-value="100" />
+            <ui:Label name="fuelValue" text="0 L" class="text-muted" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

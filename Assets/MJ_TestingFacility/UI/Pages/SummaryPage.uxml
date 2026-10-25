@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:Style src="../Theme.uss" />
+    <ui:Template name="BreakdownRow" src="../Templates/BreakdownRow.uxml" />
+    <ui:VisualElement name="summaryRoot" class="page-content page-content--center" picking-mode="Ignore">
+        <ui:VisualElement name="summaryPopup" class="panel popup">
+            <ui:Label name="summaryTitle" text="Out of fuel" class="text-heading popup-title" />
+            <ui:VisualElement name="breakdownList" class="breakdown-list">
+                <ui:Instance template="BreakdownRow" name="distanceRow">
+                    <ui:AttributeOverrides element-name="rowLabel" text="Distance" />
+                </ui:Instance>
+                <ui:Instance template="BreakdownRow" name="speedRow">
+                    <ui:AttributeOverrides element-name="rowLabel" text="Top speed" />
+                </ui:Instance>
+            </ui:VisualElement>
+            <ui:Label name="newBestLabel" text="New best distance" class="text-accent text-center hidden" />
+            <ui:Label name="totalLabel" text="" class="text-muted text-center" />
+            <ui:Label name="creditsEarnedLabel" text="+0 credits" class="text-currency text-large text-center" />
+            <ui:Button name="continueButton" text="Continue" class="btn btn--primary" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
