@@ -33,6 +33,7 @@ public class SoundManager : MonoBehaviour
     private const string UiTransitionEvent = "event:/UI_Transition";
     private const string MusicEvent = "event:/Music";
     private const string EndOfRunEvent = "event:/End_of_Run";
+    
 
     // ---------- Loops: we keep the instance so we can stop them later ----------
     private EventInstance music;
