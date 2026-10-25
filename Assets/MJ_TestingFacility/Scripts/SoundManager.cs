@@ -27,13 +27,13 @@ public class SoundManager : MonoBehaviour
     private const string ExplosionEvent = "event:/Rocket_Explotion";
     private const string HitEvent = "event:/Hit";
     private const string UiSelectEvent = "event:/UI_Select";
+    private const string UiHoverEvent = "event:/UI_Hover";
     private const string UiBackEvent = "event:/UI_Back";
     private const string UiPlayEvent = "event:/UI_Play";
     private const string UiLaunchEvent = "event:/UI_Launch";
     private const string UiTransitionEvent = "event:/UI_Transition";
     private const string MusicEvent = "event:/Music";
     private const string EndOfRunEvent = "event:/End_of_Run";
-    
 
     // ---------- Loops: we keep the instance so we can stop them later ----------
     private EventInstance music;
@@ -50,6 +50,7 @@ public class SoundManager : MonoBehaviour
     // This is how we subscribe to the UI events.
     public void Init(UIFunctionalityProvider provider)
     {
+        Debug.Log("SoundManager: Init called, subscribed to the UI events.");
         ui = provider;
 
         ui.PlayClicked += OnPlayClicked;
@@ -58,6 +59,7 @@ public class SoundManager : MonoBehaviour
         ui.BackClicked += OnBackClicked;
         ui.ContinueClicked += OnContinueClicked;
         ui.UpgradeBuyClicked += OnUpgradeBuyClicked;
+        ui.ButtonHovered += OnButtonHovered;
     }
 
     private void Start()
@@ -76,6 +78,7 @@ public class SoundManager : MonoBehaviour
             ui.BackClicked -= OnBackClicked;
             ui.ContinueClicked -= OnContinueClicked;
             ui.UpgradeBuyClicked -= OnUpgradeBuyClicked;
+            ui.ButtonHovered -= OnButtonHovered;
         }
 
         // Step 2: loops never stop on their own, so stop and release all of them
@@ -86,7 +89,6 @@ public class SoundManager : MonoBehaviour
 
     // The music starts once and keeps playing until the game is left.
     // It waits for the FMOD banks (Master + Master.strings) to finish loading.
-    
     private IEnumerator StartMusicWhenReady()
     {
         yield return new WaitUntil(() => RuntimeManager.HaveAllBanksLoaded);
@@ -104,6 +106,7 @@ public class SoundManager : MonoBehaviour
     private void OnBackClicked() { RuntimeManager.PlayOneShot(UiBackEvent); }
     private void OnContinueClicked() { RuntimeManager.PlayOneShot(UiSelectEvent); }
     private void OnUpgradeBuyClicked(UpgradeType type) { RuntimeManager.PlayOneShot(UiSelectEvent); }
+    private void OnButtonHovered() { RuntimeManager.PlayOneShot(UiHoverEvent); }
 
     // ===================================================================
     // Game flow (GameManager calls this from SetState)

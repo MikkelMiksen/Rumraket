@@ -22,6 +22,7 @@ public class UIFunctionalityProvider
     public event Action BackClicked;
     public event Action ContinueClicked;
     public event Action<UpgradeType> UpgradeBuyClicked;
+    public event Action ButtonHovered;   // the pointer entered any button
 
     // ---------- USS class names (defined in Theme.uss) ----------
     private const string HiddenPageClass = "page--hidden";
@@ -158,6 +159,15 @@ public class UIFunctionalityProvider
         fuelCard.BuyButton.clicked += OnFuelBuyButton;
         engineCard.BuyButton.clicked += OnEngineBuyButton;
 
+        // Step 8: subscribe to the pointer entering each button (hover)
+        playButton.RegisterCallback<PointerEnterEvent>(OnButtonHover);
+        upgradesButton.RegisterCallback<PointerEnterEvent>(OnButtonHover);
+        launchButton.RegisterCallback<PointerEnterEvent>(OnButtonHover);
+        backButton.RegisterCallback<PointerEnterEvent>(OnButtonHover);
+        continueButton.RegisterCallback<PointerEnterEvent>(OnButtonHover);
+        fuelCard.BuyButton.RegisterCallback<PointerEnterEvent>(OnButtonHover);
+        engineCard.BuyButton.RegisterCallback<PointerEnterEvent>(OnButtonHover);
+
         initialized = true;
     }
 
@@ -176,6 +186,14 @@ public class UIFunctionalityProvider
         continueButton.clicked -= OnContinueButton;
         fuelCard.BuyButton.clicked -= OnFuelBuyButton;
         engineCard.BuyButton.clicked -= OnEngineBuyButton;
+
+        playButton.UnregisterCallback<PointerEnterEvent>(OnButtonHover);
+        upgradesButton.UnregisterCallback<PointerEnterEvent>(OnButtonHover);
+        launchButton.UnregisterCallback<PointerEnterEvent>(OnButtonHover);
+        backButton.UnregisterCallback<PointerEnterEvent>(OnButtonHover);
+        continueButton.UnregisterCallback<PointerEnterEvent>(OnButtonHover);
+        fuelCard.BuyButton.UnregisterCallback<PointerEnterEvent>(OnButtonHover);
+        engineCard.BuyButton.UnregisterCallback<PointerEnterEvent>(OnButtonHover);
 
         initialized = false;
     }
@@ -293,17 +311,16 @@ public class UIFunctionalityProvider
     }
 
     public void SetSummary(
-        int heightMeters, int heightPoints,
-        int topSpeed, int speedPoints,
-        int totalPoints, float conversionRate,
-        int creditsEarned, bool isNewBest)
+        int heightMeters, int heightPoints, float heightRate,
+        int topSpeed, int speedPoints, float speedRate,
+        int totalPoints, int creditsEarned, bool isNewBest)
     {
         heightRaw.text = heightMeters.ToString("N0") + " m";
-        heightPointsLabel.text = heightPoints.ToString("N0") + " pts";
+        heightPointsLabel.text = heightPoints.ToString("N0") + " pts x " + heightRate.ToString("0.0#");
         speedRaw.text = topSpeed.ToString("N0") + " m/s";
-        speedPointsLabel.text = speedPoints.ToString("N0") + " pts";
+        speedPointsLabel.text = speedPoints.ToString("N0") + " pts x " + speedRate.ToString("0.0#");
 
-        totalLabel.text = totalPoints.ToString("N0") + " pts x " + conversionRate.ToString("0.0");
+        totalLabel.text = totalPoints.ToString("N0") + " pts";
         creditsEarnedLabel.text = "+" + creditsEarned.ToString("N0") + " credits";
 
         if (isNewBest)
@@ -326,6 +343,7 @@ public class UIFunctionalityProvider
         PlayClicked?.Invoke(); 
     }
     private void OnUpgradesButton() { UpgradesClicked?.Invoke(); }
+    private void OnButtonHover(PointerEnterEvent evt) { ButtonHovered?.Invoke(); }
     private void OnLaunchButton() { LaunchClicked?.Invoke(); }
     private void OnBackButton() { BackClicked?.Invoke(); }
     private void OnContinueButton() { ContinueClicked?.Invoke(); }
