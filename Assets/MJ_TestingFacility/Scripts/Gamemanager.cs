@@ -82,6 +82,7 @@ public class GameManager : MonoBehaviour
     public Rigidbody ShipBody => shipBody;
     public LaunchBehaviour_01 Ship => ship;
     public RocketAssembly Rocket => rocket;
+    public Milestone[] Milestones => milestones;
 
     private void Awake()
     {
