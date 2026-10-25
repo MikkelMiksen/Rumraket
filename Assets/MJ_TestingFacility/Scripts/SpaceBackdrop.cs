@@ -101,6 +101,13 @@ public class SpaceBackdrop : MonoBehaviour
     public float smoothTime = 0.4f;
 
     [Header("Heights (world units above the pad)")]
+    [Tooltip("Optional. If there is a GameManager (this one, or one found in the scene), the two heights below are taken from its milestones when the game starts.")]
+    [SerializeField] private GameManager gameManager;
+    [Tooltip("Name of the GameManager milestone where the atmosphere ends. If no milestone has this name, the 2nd milestone is used.")]
+    public string atmosphereMilestone = "Atmosphere";
+    [Tooltip("Name of the GameManager milestone where orbit begins. If no milestone has this name, the last milestone is used.")]
+    public string orbitMilestone = "Orbit";
+    [Tooltip("Used only when there is no GameManager. Otherwise these two are overwritten from the milestones.")]
     public float atmosphereHeight = 150f;
     public float orbitHeight = 500f;
     [Tooltip("How far along the sky's blue-to-black change the 'Atmosphere' height is (0 to 1).")]
@@ -190,8 +197,24 @@ public class SpaceBackdrop : MonoBehaviour
 
     // ------------------------------------------------------------------ setup
 
+    // Takes the atmosphere and orbit heights from the GameManager's milestones.
+    void ReadMilestones()
+    {
+        if (!gameManager) gameManager = FindFirstObjectByType<GameManager>();
+        if (!gameManager) return;
+
+        Milestone[] m = gameManager.Milestones;
+        if (m == null || m.Length == 0) return;
+
+        float h;
+        if (JourneyScale.Find(m, atmosphereMilestone, 1, out h)) atmosphereHeight = h;
+        if (JourneyScale.Find(m, orbitMilestone, m.Length - 1, out h)) orbitHeight = h;
+    }
+
     void Start()
     {
+        ReadMilestones();
+
         if (!skyShader) skyShader = Shader.Find("Rumraket/ProceduralSky");
         if (!planetShader) planetShader = Shader.Find("Rumraket/ProceduralPlanet");
         if (!skyShader || !planetShader)

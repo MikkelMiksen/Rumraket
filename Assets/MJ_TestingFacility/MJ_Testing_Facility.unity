@@ -191,6 +191,101 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -14.2, y: 0, z: 0}
+--- !u!1 &230650113
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 230650114}
+  - component: {fileID: 230650115}
+  m_Layer: 0
+  m_Name: AirHazardManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &230650114
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 230650113}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &230650115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 230650113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2313b8e4839baf4488bffb77192d59d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HazardSpawner
+  gameManager: {fileID: 1316773131}
+  ship: {fileID: 1448876926}
+  pad: {fileID: 1796917998}
+  birds:
+    prefabs:
+    - {fileID: 3458713614135609137, guid: 65d49812d7e9edc4e871f463ab093001, type: 3}
+    startAt: 0.03
+    endAt: 0.73
+    fade: 0.17
+    interval: 2.2
+    maxAlive: 10
+    aimedChance: 0.6
+    groupMin: 1
+    groupMax: 4
+    groupSpread: 6
+  planes:
+    prefabs:
+    - {fileID: 5507600729585247177, guid: 6e7564f0cb47aee4f986b5b2c454f836, type: 3}
+    - {fileID: 3464603110576005130, guid: a99f86057ddb67744ba4b40211c12297, type: 3}
+    startAt: 0.47
+    endAt: 1.4
+    fade: 0.27
+    interval: 4.5
+    maxAlive: 4
+    aimedChance: 0.7
+    groupMin: 1
+    groupMax: 1
+    groupSpread: 6
+  asteroids:
+    prefabs:
+    - {fileID: 4281806578162908557, guid: 6bef7417e599c6e44adbe5d6d72f24a1, type: 3}
+    - {fileID: 2510129605138448600, guid: 69d6e0d30d9a5d347af08c6306de70a0, type: 3}
+    - {fileID: 2397791020797287278, guid: ce2f90957e50bbc46936fb171cc4957c, type: 3}
+    startAt: 1.29
+    endAt: 99
+    fade: 0.29
+    interval: 2.5
+    maxAlive: 10
+    aimedChance: 0.5
+    groupMin: 1
+    groupMax: 2
+    groupSpread: 15
+  crossAxis: {x: 1, y: 0, z: 0}
+  minAhead: 60
+  maxAhead: 160
+  maxSide: 90
+  aimError: 5
+  looseSpread: 45
+  depthSpread: 0
+  minShipSpeed: 2
+  cleanupBehind: 120
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -931,6 +1026,9 @@ MonoBehaviour:
   target: {fileID: 1448876926}
   pad: {fileID: 1796917998}
   smoothTime: 0.4
+  gameManager: {fileID: 0}
+  atmosphereMilestone: Atmosphere
+  orbitMilestone: Orbit
   atmosphereHeight: 150
   orbitHeight: 500
   atmosphereAltitude: 0.35
@@ -1203,6 +1301,8 @@ MonoBehaviour:
   maxUpgradeLevel: 5
   baseUpgradeCost: 1
   upgradeCostGrowth: 3.5
+  heightCreditsPerPoint: 100
+  speedCreditsPerPoint: 100
   maxModuleTier: 3
   moduleBuyCostMultiplier: 5
   moduleBuyBonusSteps: 3
@@ -1510,3 +1610,4 @@ SceneRoots:
   - {fileID: 2007057324}
   - {fileID: 1184268338}
   - {fileID: 1293292726}
+  - {fileID: 230650114}
