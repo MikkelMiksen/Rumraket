@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private RocketAssembly rocket;
     [Tooltip("Object whose height is the top of the launch pad. Empty = the rocket's starting height.")]
     [SerializeField] private Transform pad;
+    [Tooltip("Optional. Plays the FMOD sounds. Leave empty to run silent.")]
+    [SerializeField] private SoundManager sound;
 
     [Header("Tuning")]
     [SerializeField] private int startingCredits = 0;
@@ -110,6 +112,12 @@ public class GameManager : MonoBehaviour
         // Step 2: subscribe to the UI events. The events belong to
         // ui_functionality, which lives as long as this component, so this
         // only has to happen once (even if the UI is rebuilt later).
+        // The sound manager listens to the same click events
+        if (sound != null)
+        {
+            sound.Init(ui_functionality);
+        }
+
         ui_functionality.PlayClicked += OnPlayClicked;
         ui_functionality.UpgradesClicked += OnUpgradesClicked;
         ui_functionality.LaunchClicked += OnLaunchClicked;
@@ -274,6 +282,12 @@ public class GameManager : MonoBehaviour
                 
                 FinishRun();
                 break;
+        }
+
+        // Sounds for the new state (launch, engine, end of run, menu swoosh)
+        if (sound != null)
+        {
+            sound.OnStateChanged(oldState, newState);
         }
 
         // The page for the new state is shown last, after its data is ready
