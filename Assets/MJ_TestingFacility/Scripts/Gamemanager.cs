@@ -1,6 +1,9 @@
 ﻿using MJ_TestingFacility.Scripts;
 using UnityEngine;
 using UnityEngine.UIElements;
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
 
 public class GameManager : MonoBehaviour
 {
@@ -14,6 +17,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private RocketAssembly rocket;
     [Tooltip("Object whose height is the top of the launch pad. Empty = the rocket's starting height.")]
     [SerializeField] private Transform pad;
+    [Tooltip("Optional. Plays the FMOD sounds. Leave empty to run silent.")]
+    [SerializeField] private SoundManager sound;
 
     [Header("Tuning")]
     [SerializeField] private int startingCredits = 0;
@@ -67,6 +72,7 @@ public class GameManager : MonoBehaviour
     // ---------- Current run ----------
     private float runMaxHeight;
     private float runMaxSpeed;
+    private bool wasSteering;
 
     // ---------- Ship start pose ----------
     private Vector3 startPosition;
@@ -82,6 +88,8 @@ public class GameManager : MonoBehaviour
     public Rigidbody ShipBody => shipBody;
     public LaunchBehaviour_01 Ship => ship;
     public RocketAssembly Rocket => rocket;
+    
+    public Milestone[] Milestones => milestones;
 
     private void Awake()
     {
@@ -110,6 +118,22 @@ public class GameManager : MonoBehaviour
         // Step 2: subscribe to the UI events. The events belong to
         // ui_functionality, which lives as long as this component, so this
         // only has to happen once (even if the UI is rebuilt later).
+        // The sound manager listens to the same click events.
+        // If the Inspector field is empty, look for one in the scene.
+        if (sound == null)
+        {
+            sound = FindFirstObjectByType<SoundManager>();
+        }
+
+        if (sound != null)
+        {
+            sound.Init(ui_functionality);
+        }
+        else
+        {
+            Debug.LogWarning("GameManager: no SoundManager found, the game runs silent.");
+        }
+
         ui_functionality.PlayClicked += OnPlayClicked;
         ui_functionality.UpgradesClicked += OnUpgradesClicked;
         ui_functionality.LaunchClicked += OnLaunchClicked;
@@ -276,6 +300,12 @@ public class GameManager : MonoBehaviour
                 break;
         }
 
+        // Sounds for the new state (launch, engine, end of run, menu swoosh)
+        if (sound != null)
+        {
+            sound.OnStateChanged(oldState, newState);
+        }
+
         // The page for the new state is shown last, after its data is ready
         ui_functionality.ShowState(newState);
     }
@@ -352,14 +382,76 @@ public class GameManager : MonoBehaviour
         ResetShipToPad();
         runMaxHeight = 0f;
         runMaxSpeed = 0f;
+        wasSteering = false;
 
         // Step 2: camera trails the ship, engine on
         shipBody.isKinematic = false;
         ship.StartEngine();
     }
 
+    // Horizontal input: A/D or the arrow keys (or the old Input Manager's Horizontal axis)
+    private float ReadSteerInput()
+    {
+#if ENABLE_INPUT_SYSTEM
+        Keyboard keyboard = Keyboard.current;
+
+        if (keyboard == null)
+        {
+            return 0f;
+        }
+
+        float input = 0f;
+
+        if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed)
+        {
+            input += 1f;
+        }
+
+        if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed)
+        {
+            input -= 1f;
+        }
+
+        return input;
+#else
+        return Input.GetAxisRaw("Horizontal");
+#endif
+    }
+
+    // The thruster sound plays while the player steers (on top of the engine)
+    private void UpdateThrusterSound(float steerInput)
+    {
+        bool steering = Mathf.Abs(steerInput) > 0.01f;
+
+        if (steering == wasSteering)
+        {
+            return;
+        }
+
+        wasSteering = steering;
+
+        if (sound == null)
+        {
+            return;
+        }
+
+        if (steering)
+        {
+            sound.StartThruster();
+        }
+        else
+        {
+            sound.StopThruster();
+        }
+    }
+
     private void UpdateFlight()
     {
+        // Step 0: steering. The input spins the rocket, the thruster sound follows it
+        float steerInput = ReadSteerInput();
+        ship.SetSteerInput(steerInput);
+        UpdateThrusterSound(steerInput);
+
         // Step 1: measure this frame
         float height = ship.transform.position.y - startPosition.y;
         float speed = shipBody.linearVelocity.magnitude;
@@ -425,6 +517,7 @@ public class GameManager : MonoBehaviour
             creditsEarned, isNewBest);
 
         rocketNeedsRestore = true;
+        wasSteering = false;   // SoundManager has already stopped the thruster
     }
 
     private void ResetShipToPad()
