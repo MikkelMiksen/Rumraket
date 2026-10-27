@@ -244,11 +244,11 @@ MonoBehaviour:
     startAt: 0.03
     endAt: 1.5
     fade: 0.17
-    interval: 2.2
-    maxAlive: 10
+    interval: 1000
+    maxAlive: 1000
     aimedChance: 0.6
     groupMin: 1
-    groupMax: 4
+    groupMax: 423
     groupSpread: 6
   planes:
     prefabs:
@@ -257,11 +257,11 @@ MonoBehaviour:
     startAt: 0.47
     endAt: 10.5
     fade: 0.27
-    interval: 4.5
-    maxAlive: 4
+    interval: 1
+    maxAlive: 800
     aimedChance: 0.7
     groupMin: 1
-    groupMax: 1
+    groupMax: 599
     groupSpread: 6
   asteroids:
     prefabs:
@@ -271,11 +271,11 @@ MonoBehaviour:
     startAt: 14
     endAt: 1e+18
     fade: 0.29
-    interval: 2.5
-    maxAlive: 100
-    aimedChance: 0.5
+    interval: 900
+    maxAlive: 1000
+    aimedChance: 0.923
     groupMin: 1
-    groupMax: 2
+    groupMax: 391
     groupSpread: 30
   crossAxis: {x: 1, y: 0, z: 0}
   minAhead: 60
@@ -1032,7 +1032,7 @@ MonoBehaviour:
   target: {fileID: 1448876926}
   pad: {fileID: 1796917998}
   smoothTime: 0.4
-  gameManager: {fileID: 0}
+  gameManager: {fileID: 1316773131}
   atmosphereMilestone: Atmosphere
   orbitMilestone: Orbit
   atmosphereHeight: 150
@@ -1302,12 +1302,12 @@ MonoBehaviour:
   rocket: {fileID: 1448876924}
   pad: {fileID: 1184268339}
   sound: {fileID: 2007057325}
-  startingCredits: 0
+  startingCredits: 5
   heightCreditsPerPoint: 1
   speedCreditsPerPoint: 2
   maxUpgradeLevel: 5
   baseUpgradeCost: 10
-  upgradeCostGrowth: 3.37
+  upgradeCostGrowth: 3.87
   maxModuleTier: 3
   moduleBuyCostMultiplier: 5
   moduleBuyBonusSteps: 3
@@ -1444,13 +1444,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LaunchBehaviour_01
   Fuel_Amount: 0
-  Fuel_Capacity: 1
+  Fuel_Capacity: 2
   Engine_Thrust_Power: 0.725
   Engine_Consumption_Factor: 0.9
   rb: {fileID: 1448876925}
   fuelUpgradeAmount: 2.37
-  engineUpgradeAmount: 0.15
-  emptyTankGravityMultiplier: 5
+  engineUpgradeAmount: 0.734
+  emptyTankGravityMultiplier: 20
   steerAxis: {x: 0, y: 0, z: 1}
   steerTorque: 2
   invertSteering: 0
